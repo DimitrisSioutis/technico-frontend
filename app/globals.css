@@ -76,3 +76,18 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+#about p{
+  opacity: 0;
+  animation: fadeIn 0.2s ease-in forwards;
+}
+
+/* Define the animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

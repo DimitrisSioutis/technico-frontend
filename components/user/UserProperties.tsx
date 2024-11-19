@@ -9,7 +9,6 @@ interface UserPropertiesProps {
 const UserProperties: React.FC<UserPropertiesProps>  = ({properties}) => {
   return (
     <div>
-        <h4 className="text-lg font-semibold mb-2">Properties</h4>
         { properties && properties.length > 0 ? (
         <ul className="space-y-2">
             {properties.map((property) => (

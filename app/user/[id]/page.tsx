@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Mail, Home, Plus } from "lucide-react";
 
-
-import UserProperties from "@/components/user/UserProperties"
+import UserProperties from "@/components/user/UserProperties";
 import UserDetails from "@/components/user/UserDetails";
 import AddProperty from "@/components/user/AddProperty";
 
@@ -20,17 +20,15 @@ export type User = {
   id: number;
   name: string;
   email: string;
-  properties: Property[]; // Added properties field
+  properties: Property[];
 };
 
 export default function UserPage() {
   const params = useParams();
-  const userId = params.id;
+  const userId = Array.isArray(params.id) ? params.id[0] : params.id; // Ensure userId is a string
 
   const [user, setUser] = useState<User | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-
-
 
   useEffect(() => {
     async function fetchUser() {
@@ -54,31 +52,85 @@ export default function UserPage() {
     }
 
     fetchUser();
-  }, [userId]); // Dependency array to re-run when userId changes
+  }, [userId]);
 
   return (
-    <Card className="w-full max-w-xl">
-      <CardHeader>
-        <CardTitle>User Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {errorMessage && (
-          <Alert>
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
-        )}
+    <div className="container mx-auto py-6">
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      )}
 
-        {user ? (
-          <>
-            <UserDetails user={user} />
-            <UserProperties properties={user.properties} />
-            <AddProperty/>
-          </>
-        ) : (
-          <p>Loading user data...</p>
-        )}
-      </CardContent>
-    </Card>
+      {user ? (
+        <div className="grid gap-6">
+          <Card className="shadow-lg">
+            <CardHeader className="pb-4">
+              <div className="flex items-center space-x-4">
+                <div className="bg-primary/10 p-4 rounded-full">
+                  <User className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl font-bold">{user.name}</CardTitle>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span>{user.email}</span>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="details">Profile Details</TabsTrigger>
+              <TabsTrigger value="properties">Properties</TabsTrigger>
+              <TabsTrigger value="add">Add Property</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="details">
+              <Card>
+                <CardContent className="pt-6">
+                  <UserDetails user={user} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="properties">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center mb-4">
+                    <Home className="h-5 w-5 mr-2 text-primary" />
+                    <h3 className="text-lg font-semibold">Properties</h3>
+                  </div>
+                  <UserProperties properties={user.properties} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="add">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center mb-4">
+                    <Plus className="h-5 w-5 mr-2 text-primary" />
+                    <h3 className="text-lg font-semibold">Add New Property</h3>
+                  </div>
+                  <AddProperty id={userId} /> {/* Pass userId as string */}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      ) : (
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center h-24">
+              <p className="text-muted-foreground">Loading user data...</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
