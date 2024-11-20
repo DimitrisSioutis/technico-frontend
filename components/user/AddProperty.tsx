@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {Plus} from "lucide-react";
 
 interface AddPropertyProps {
   id: string;
@@ -75,9 +75,7 @@ export default function AddProperty({ id }: AddPropertyProps) {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-md">
-          <CardContent>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="address">Address</Label>
@@ -104,15 +102,10 @@ export default function AddProperty({ id }: AddPropertyProps) {
               {errorMessage && (
                 <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
               )}
-
-              <CardFooter>
-                <Button type="submit" className="w-24 m-auto">
-                  Add
-                </Button>
-              </CardFooter>
+              <Button type="submit" className="w-full flex">
+                    <Plus className="h-8 w-8 mr-2 text-slate-50" />
+                    <h3 className="text-lg font-semibold">Add Property</h3>
+              </Button>
             </form>
-          </CardContent>
-        </Card>
-      </div>
   );
 }
