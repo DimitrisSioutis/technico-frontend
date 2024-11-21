@@ -9,19 +9,7 @@ import {User as UserIcon, Mail, Home, Plus } from "lucide-react";
 import UserProperties from "@/components/user/UserProperties";
 import AddProperty from "@/components/user/AddProperty";
 
-type User = {
-  id: string;
-  name: string;
-  surname: string;
-  email: string;
-  properties: Property[];
-};
-
-export type Property = {
-  propertyId: string;
-  address: string;
-  yearOfConstruction: number;
-};
+import { type User } from "@/app/layout-types";
 
 
 

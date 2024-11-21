@@ -5,14 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-
-enum RepairType {
-    Plumbing = 0,
-    Electrical = 1,
-    Painting = 2,
-    Other = 3
-}
-
+import { RepairType } from "@/app/layout-types";
 
 interface AddRepairProps {
     propertyId: string;
@@ -39,7 +32,7 @@ interface FormErrors {
 export default function AddRepair({ propertyId, propertyAddress }: AddRepairProps) {
     const [formData, setFormData] = useState<FormData>({
         scheduledDate: "",
-        type: RepairType.Other,
+        type: 0,
         currentStatus: 0, 
         description: "",
         cost: 0,

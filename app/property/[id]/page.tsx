@@ -9,21 +9,7 @@ import { Home, Wrench, Hammer} from "lucide-react";
 
 import PropertyRepairs from "@/components/repair/PropertyRepairs";
 import AddRepair from "@/components/repair/AddRepair";
-
-type Property = {
-  propertyId: string;
-  address: string;
-  yearOfConstruction: number;
-  repairs: Repair[];
-};
-
-export type Repair = {
-  repairID: string;
-  description: string;
-  propertId: string;
-};
-
-
+import { type Property } from "@/app/layout-types";
 
 export default function Property() {
   const params = useParams();

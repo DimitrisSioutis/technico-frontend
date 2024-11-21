@@ -1,10 +1,10 @@
 "use client"
 import React from 'react'
 import Link from 'next/link';
-import { Property } from '@/app/user/[id]/page';
+import { SimpleProperty } from '@/app/layout-types';
 
 interface UserPropertiesProps {
-  properties: Property[];
+  properties: SimpleProperty[];
 }
 
 const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
