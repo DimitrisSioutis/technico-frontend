@@ -18,7 +18,7 @@ type User = {
 };
 
 export type Property = {
-  propertyIDNumber: string;
+  propertyId: string;
   address: string;
   yearOfConstruction: number;
 };
@@ -27,7 +27,7 @@ export type Property = {
 
 export default function UserPage() {
   const params = useParams();
-  const userId = Array.isArray(params.id) ? params.id[0] : params.id; // Ensure userId is a string
+  const userId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [user, setUser] = useState<User | null>(null);
   const [errorMessage, setErrorMessage] = useState("");

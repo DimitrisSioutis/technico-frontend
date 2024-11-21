@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 
-// Ensure enum matches exactly with backend
 enum RepairType {
     Plumbing = 0,
     Electrical = 1,
@@ -14,18 +13,20 @@ enum RepairType {
     Other = 3
 }
 
+
 interface AddRepairProps {
-    propertyIdNum: string;
+    propertyId: string;
     propertyAddress: string;
 }
 
 interface FormData {
     scheduledDate: string;
     type: RepairType;
+    currentStatus?: number;
     description: string;
+    address: string;
     cost: number;
     propertyId: string;
-    address: string;
 }
 
 interface FormErrors {
@@ -35,16 +36,16 @@ interface FormErrors {
     cost?: string;
 }
 
-export default function AddRepair({ propertyIdNum, propertyAddress }: AddRepairProps) {
+export default function AddRepair({ propertyId, propertyAddress }: AddRepairProps) {
     const [formData, setFormData] = useState<FormData>({
         scheduledDate: "",
         type: RepairType.Other,
+        currentStatus: 0, 
         description: "",
         cost: 0,
-        propertyId: propertyIdNum,
+        propertyId: propertyId,
         address: propertyAddress
     });
-
     const [errors, setErrors] = useState<FormErrors>({});
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -84,23 +85,16 @@ export default function AddRepair({ propertyIdNum, propertyAddress }: AddRepairP
         try {
             const payload = {
                 scheduledDate: new Date(formData.scheduledDate).toISOString(),
-                type: formData.type,
-                description: formData.description,
-                address: formData.address,
-                cost: formData.cost,
-                propertyId: formData.propertyId,
-                // Add Property field explicitly
-                property: {
-                    id: formData.propertyId,
-                    address: formData.address,
-                    owner: {
-                        id: "current-user-id", // Replace with actual user ID
-                    }
-                }
+                type: Number(formData.type), 
+                currentStatus: 0,
+                description: formData.description.trim(), 
+                address: formData.address.trim(),
+                cost: Number(formData.cost), 
+                propertyId: formData.propertyId
             };
 
-            console.log('Sending payload:', JSON.stringify(payload, null, 2));
-
+            console.log('Full payload:', JSON.stringify(payload, null, 2));
+    
             const response = await fetch("https://localhost:7166/api/Repair", {
                 method: "POST",
                 headers: {
@@ -109,26 +103,29 @@ export default function AddRepair({ propertyIdNum, propertyAddress }: AddRepairP
                 body: JSON.stringify(payload),
             });
 
+            const responseText = await response.text();
+            console.log('Raw response text:', responseText);
+    
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Error response:', errorText);
+                throw new Error(responseText);
             }
-
-            const result = await response.json();
-            console.log('Success response:', result);
+    
+            const result = JSON.parse(responseText);
             return result;
         } catch (error) {
-            console.error('Error details:', error);
             setErrorMessage((error as Error).message);
             throw error;
         }
     }
 
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (validateForm()) postRepair();
+    
+        if (validateForm()) {
+            await postRepair();
+        }
     };
-
     return (
         <form onSubmit={handleSubmit} className="space-y-4 w-2/3 mx-auto">
             <div>

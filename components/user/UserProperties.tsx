@@ -21,13 +21,14 @@ const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
               console.log('Rendering property:', property);
               return (
                 <li
-                    key={property?.propertyIDNumber || 'unknown'}
+                    key={property.propertyId || 'unknown'}
                     className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <Link href={`/property/${property?.propertyIDNumber}`} className="block">
+                  <Link href={`/property/${property.propertyId}`} className="block">
+                  {property.propertyId}
                     <div className="space-y-2">
                       <p className="text-gray-600">
-                        <strong>Address:</strong> {property?.address || 'No address provpropertyIDNumbered'}
+                        <strong>Address:</strong> {property.address || 'No address provpropertyIDNumbered'}
                       </p>
                       <p className="text-gray-600">
                         <strong>Year of Construction:</strong>{" "}

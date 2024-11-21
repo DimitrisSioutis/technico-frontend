@@ -11,16 +11,16 @@ import PropertyRepairs from "@/components/repair/PropertyRepairs";
 import AddRepair from "@/components/repair/AddRepair";
 
 type Property = {
-  propertyIDNumber: string;
+  propertyId: string;
   address: string;
   yearOfConstruction: number;
   repairs: Repair[];
 };
 
 export type Repair = {
-  propertyIDNumber: string;
-  address: string;
-  yearOfConstruction: number;
+  repairID: string;
+  description: string;
+  propertId: string;
 };
 
 
@@ -47,6 +47,7 @@ export default function Property() {
 
         const data: Property = await response.json();
         setProperty(data);
+        console.log(data)
       } catch (error) {
         console.error("Error fetching user data:", error);
         setErrorMessage((error as Error).message);
@@ -105,7 +106,7 @@ export default function Property() {
             <TabsContent value="add">
               <Card>
                 <CardContent className="pt-6">
-                  <AddRepair propertyIdNum={property.propertyIDNumber as string} propertyAddress={property.address as string} />
+                  <AddRepair propertyId={property.propertyId as string} propertyAddress={property.address as string} />
                 </CardContent>
               </Card>
             </TabsContent>
