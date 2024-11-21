@@ -11,8 +11,6 @@ import AddProperty from "@/components/user/AddProperty";
 
 import { type User } from "@/app/layout-types";
 
-
-
 export default function UserPage() {
   const params = useParams();
   const userId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -29,14 +27,11 @@ export default function UserPage() {
 
         if (!response.ok) {
           const error = await response.json();
-          console.error("Error fetching user data:", error);
           throw new Error(error.message || "Failed to fetch user data");
         }
-
         const data: User = await response.json();
         setUser(data);
       } catch (error) {
-        console.error("Error fetching user data:", error);
         setErrorMessage((error as Error).message);
       }
     }

@@ -1,6 +1,7 @@
 "use client"
 import React from 'react'
 import Link from 'next/link';
+import { LoaderCircle } from 'lucide-react';
 import { SimpleProperty } from '@/app/layout-types';
 
 interface UserPropertiesProps {
@@ -10,7 +11,7 @@ interface UserPropertiesProps {
 const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
 
   if (!properties) {
-    return <p className="text-gray-600">Loading properties...</p>;
+    return <LoaderCircle/>;
   }
 
   return (

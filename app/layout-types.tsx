@@ -27,6 +27,16 @@ export type User = {
     email: string;
     properties: Property[];
 };
+
+
+export type SimpleUser = {
+    id: string;
+    name: string;
+    surname: string;
+    email: string;
+};
+  
+  
   
 export type SimpleProperty = {
     propertyId: string;

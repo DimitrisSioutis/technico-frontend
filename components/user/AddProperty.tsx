@@ -60,7 +60,6 @@ export default function AddProperty({ id }: AddPropertyProps) {
         throw new Error(error.message || "Something went wrong while creating the property");
       }
 
-      console.log(formData)
     } catch (error) {
       setErrorMessage((error as Error).message);
     }
