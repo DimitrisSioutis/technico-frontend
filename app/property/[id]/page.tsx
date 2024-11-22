@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home, Wrench, Hammer} from "lucide-react";
 
-import PropertyRepairs from "@/components/repair/PropertyRepairs";
+import PropertyRepairs from "@/components/properties/PropertyRepairs";
 import AddRepair from "@/components/repair/AddRepair";
 import { type Property } from "@/app/layout-types";
 

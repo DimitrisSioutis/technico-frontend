@@ -2,8 +2,19 @@ export type Property = {
     propertyId: string;
     address: string;
     yearOfConstruction: number;
+    ownerID: string;
     repairs: Repair[];
-  };
+};
+
+export type SimpleProperty = {
+    propertyId: string;
+    address: string;
+    yearOfConstruction: number;
+};
+
+export interface AddPropertyProps {
+    id: string;
+}
   
 export type Repair = {
     repairID: string;
@@ -38,20 +49,13 @@ export type SimpleUser = {
     email: string;
 };
   
-export type SimpleProperty = {
+
+  
+export interface PropertyFormData {
     propertyId: string;
     address: string;
     yearOfConstruction: number;
-};
-
-export interface AddPropertyProps {
-    id: string;
-}
-  
-export interface FormData {
-    address: string;
-    yearOfConstruction: number;
-    ownerId: string;
+    ownerID: string;
 }
   
 export interface FormErrors {

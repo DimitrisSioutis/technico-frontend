@@ -3,6 +3,7 @@ import React from 'react'
 import Link from 'next/link';
 import { LoaderCircle } from 'lucide-react';
 import { SimpleProperty } from '@/app/layout-types';
+import RUDoptions from '../RUDoptions';
 
 interface UserPropertiesProps {
   properties: SimpleProperty[];
@@ -35,6 +36,7 @@ const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
                       </p>
                     </div>
                   </Link>
+                  <RUDoptions model={'property'} id={property.propertyId} />
                 </li>
               );
             })}
