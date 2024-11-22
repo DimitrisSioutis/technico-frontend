@@ -22,12 +22,14 @@ export enum RepairType {
 
 export type User = {
     id: string;
+    vatNumber: string;
     name: string;
     surname: string;
+    address: string;
+    phoneNumber: string;
     email: string;
     properties: Property[];
 };
-
 
 export type SimpleUser = {
     id: string;
@@ -36,11 +38,45 @@ export type SimpleUser = {
     email: string;
 };
   
-  
-  
 export type SimpleProperty = {
     propertyId: string;
     address: string;
     yearOfConstruction: number;
 };
+
+export interface AddPropertyProps {
+    id: string;
+}
   
+export interface FormData {
+    address: string;
+    yearOfConstruction: number;
+    ownerId: string;
+}
+  
+export interface FormErrors {
+    address?: string;
+    yearOfConstruction?: string;
+    ownerId?: string;
+}
+
+export interface UserFormData {
+    vatNumber: string;
+    name: string;
+    surname: string;
+    address: string;
+    phoneNumber: string;
+    email: string;
+    password: string;
+}
+  
+
+export interface UserFormErrors {
+    vatNumber?: string;
+    name?: string;
+    surname?: string;
+    address?: string;
+    phoneNumber?: string;
+    email?: string;
+    password?: string;
+}

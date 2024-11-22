@@ -39,7 +39,7 @@ const Users: React.FC<UserProps> = ({ users }) => {
             <Link href={`/user/${user.id}`}>
               <Eye color="rgb(75 85 99)" />
             </Link>
-            <Link href={`/user/${user.id}`}>
+            <Link href={`/user/update/${user.id}`}>
               <Pencil color="rgb(75 85 99)" />
             </Link>
             <Button onClick={()=>handleSubmit(user.id)}>

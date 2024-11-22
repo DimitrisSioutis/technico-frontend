@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {User as UserIcon, Mail, Home, Plus } from "lucide-react";
 
 import UserProperties from "@/components/user/UserProperties";
-import AddProperty from "@/components/user/AddProperty";
+import AddProperty from "@/components/properties/AddProperty";
 
 import { type User } from "@/app/layout-types";
 

@@ -1,14 +1,21 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useRouter } from "next/navigation"; // For navigation
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { type UserFormData , type UserFormErrors , type SimpleUser} from "@/app/layout-types";
+import { type UserFormData, type UserFormErrors, type User } from "@/app/layout-types";
 
+const UpdateUser = () => {
+  const params = useParams();
+  const userId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const router = useRouter();
 
-export default function SignUp() {
+  const [errors, setErrors] = useState<UserFormErrors>({});
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<UserFormData>({
     vatNumber: "",
     name: "",
@@ -19,13 +26,50 @@ export default function SignUp() {
     password: "",
   });
 
-  const [errors, setErrors] = useState<UserFormErrors>({});
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const router = useRouter(); // Use Next.js router for navigation
+  useEffect(() => {
+    async function fetchUser() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`https://localhost:7166/api/User/${userId}`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to fetch user data");
+        }
+
+        const userData: User = await response.json();
+        setUser(userData);
+        
+        // Only update form data if we have valid user data
+        if (userData) {
+          setFormData({
+            vatNumber: userData.vatNumber,
+            name: userData.name,
+            surname: userData.surname,
+            address: userData.address,
+            phoneNumber: userData.phoneNumber,
+            email: userData.email,
+            password: "", // Leave password empty as it's optional for updates
+          });
+        }
+      } catch (error) {
+        setErrorMessage((error as Error).message);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (userId) {
+      fetchUser();
+    }
+  }, [userId]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateForm = (): boolean => {
@@ -39,7 +83,7 @@ export default function SignUp() {
       newErrors.phoneNumber = "Phone number must be at least 10 digits";
     }
     if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.password || formData.password.length < 6) {
+    if (formData.password && formData.password.length > 0 && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
@@ -47,24 +91,27 @@ export default function SignUp() {
     return Object.keys(newErrors).length === 0;
   };
 
-  async function postUser() {
+  async function updateUser() {
+    if (!user?.id) {
+      setErrorMessage("Cannot update user: User data is not available");
+      return;
+    }
+
     try {
-      const response = await fetch("https://localhost:7166/api/User", {
-        method: "POST",
+      const updatePayload = { ...formData };
+      const response = await fetch(`https://localhost:7166/api/User/${user.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updatePayload),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Something went wrong while creating the user");
+        throw new Error(error.message || "Something went wrong while updating the user");
       }
 
-      const user: SimpleUser = await response.json(); 
-
-      // Redirect to /user/:user.id
       router.push(`/user/${user.id}`);
     } catch (error) {
       setErrorMessage((error as Error).message);
@@ -73,17 +120,44 @@ export default function SignUp() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (validateForm()) {
-      postUser();
+      updateUser();
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md shadow-md p-6">
+          <div className="text-center">Loading user data...</div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md shadow-md p-6">
+          <div className="text-center text-red-500">
+            {errorMessage || "User not found"}
+          </div>
+          <Button 
+            onClick={() => router.push("/dashboard")} 
+            className="w-full mt-4"
+          >
+            Return to Dashboard
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <Card className="w-full max-w-md shadow-md">
         <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
+          <CardTitle>Update Profile</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,7 +170,6 @@ export default function SignUp() {
                 value={formData.vatNumber}
                 onChange={handleChange}
               />
-              
             </div>
             <div>
               <Label htmlFor="name">Name</Label>
@@ -107,7 +180,6 @@ export default function SignUp() {
                 value={formData.name}
                 onChange={handleChange}
               />
-              
             </div>
             <div>
               <Label htmlFor="surname">Surname</Label>
@@ -118,7 +190,6 @@ export default function SignUp() {
                 value={formData.surname}
                 onChange={handleChange}
               />
-              
             </div>
             <div>
               <Label htmlFor="address">Address</Label>
@@ -129,7 +200,6 @@ export default function SignUp() {
                 value={formData.address}
                 onChange={handleChange}
               />
-              
             </div>
             <div>
               <Label htmlFor="phoneNumber">Phone Number</Label>
@@ -140,7 +210,6 @@ export default function SignUp() {
                 value={formData.phoneNumber}
                 onChange={handleChange}
               />
-              
             </div>
             <div>
               <Label htmlFor="email">Email</Label>
@@ -152,18 +221,18 @@ export default function SignUp() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>{errors.password && <span className="pl-4 text-red-500 text-sm">{errors.password}</span>}
+              <Label htmlFor="password">Password (Optional)</Label>
+              {errors.password && <span className="pl-4 text-red-500 text-sm">{errors.password}</span>}
               <Input
                 id="password"
                 name="password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
+                placeholder="Leave blank to keep current password"
               />
-              
             </div>
 
             {errorMessage && (
@@ -172,7 +241,7 @@ export default function SignUp() {
 
             <CardFooter>
               <Button type="submit" className="w-full">
-                Sign Up
+                Update Profile
               </Button>
             </CardFooter>
           </form>
@@ -180,4 +249,6 @@ export default function SignUp() {
       </Card>
     </div>
   );
-}
+};
+
+export default UpdateUser;

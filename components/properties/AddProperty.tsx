@@ -3,22 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {Plus} from "lucide-react";
-
-interface AddPropertyProps {
-  id: string;
-}
-
-interface FormData {
-  address: string;
-  yearOfConstruction: number;
-  ownerId: string;
-}
-
-interface FormErrors {
-  address?: string;
-  yearOfConstruction?: string;
-  ownerId?: string;
-}
+import { type FormData , type FormErrors ,type AddPropertyProps } from "@/app/layout-types";
 
 export default function AddProperty({ id }: AddPropertyProps) {
   const [formData, setFormData] = useState<FormData>({
