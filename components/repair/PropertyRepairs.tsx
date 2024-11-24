@@ -1,8 +1,9 @@
 import React from 'react'
-import { type Repair } from '@/app/layout-types';
+import { type RepairModel } from '@/app/layout-types';
+import Repair from '../repair/Repair';
 
 interface PropertyRepairsProps {
-    repairs: Repair[];
+    repairs: RepairModel[];
 }
 
 const PropertyRepairs: React.FC<PropertyRepairsProps> = ({repairs})  => {
@@ -17,12 +18,7 @@ const PropertyRepairs: React.FC<PropertyRepairsProps> = ({repairs})  => {
             <ul className="space-y-2">
                 {repairs.map((repair) => {
                   return (
-                    <div key={repair.repairID}>
-                      <h1>Type: {repair.type}</h1>
-                      <h2>Repair Description: {repair.description}</h2>
-                      <p>Cost: {repair.cost}€</p>
-                      <hr/>
-                    </div>
+                    <Repair repair={repair} key={repair.id} />
                   );
                 })}
             </ul>

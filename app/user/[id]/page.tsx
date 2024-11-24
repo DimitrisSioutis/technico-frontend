@@ -2,50 +2,33 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {User as UserIcon, Mail, Home, Plus } from "lucide-react";
 
-import UserProperties from "@/components/user/UserProperties";
+import UserProperties from "@/components/properties/UserProperties";
 import AddProperty from "@/components/properties/AddProperty";
 
 import { type User } from "@/app/layout-types";
+import fetchData from "@/app/utils/fetch";
 
 export default function UserPage() {
   const params = useParams();
   const userId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [user, setUser] = useState<User | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await fetch(`https://localhost:7166/api/User/${userId}`, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || "Failed to fetch user data");
-        }
-        const data: User = await response.json();
-        setUser(data);
-      } catch (error) {
-        setErrorMessage((error as Error).message);
-      }
-    }
-
-    fetchUser();
+    fetchData<User>(userId,'User',  setUser);
   }, [userId]);
 
+  
 
   return (
     <div className="container mx-auto py-6 ">
-      {errorMessage && (
+      {!user && (
         <Alert variant="destructive" className="mb-6">
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
 

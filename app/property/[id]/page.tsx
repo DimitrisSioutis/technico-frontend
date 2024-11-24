@@ -3,52 +3,30 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home, Wrench, Hammer} from "lucide-react";
 
-import PropertyRepairs from "@/components/properties/PropertyRepairs";
+import PropertyRepairs from "@/components/repair/PropertyRepairs";
 import AddRepair from "@/components/repair/AddRepair";
 import { type Property } from "@/app/layout-types";
+import fetchData from "@/app/utils/fetch"
 
 export default function Property() {
   const params = useParams();
   const propertyId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [property, setProperty] = useState<Property | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    async function fetchProperty() {
-      try {
-        const response = await fetch(`https://localhost:7166/api/Property/${propertyId}`, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          console.error("Error fetching user data:", error);
-          throw new Error(error.message || "Failed to fetch user data");
-        }
-
-        const data: Property = await response.json();
-        setProperty(data);
-        console.log(data)
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setErrorMessage((error as Error).message);
-      }
-    }
-
-    fetchProperty();
+    fetchData<Property>(propertyId,'Property',  setProperty);
   }, [propertyId]);
 
   return (
     <div className="container mx-auto py-6">
-      {errorMessage && (
+      {!property && (
         <Alert variant="destructive" className="mb-6">
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
 

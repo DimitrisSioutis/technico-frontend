@@ -3,7 +3,7 @@ export type Property = {
     address: string;
     yearOfConstruction: number;
     ownerID: string;
-    repairs: Repair[];
+    repairs: RepairModel[];
 };
 
 export type SimpleProperty = {
@@ -16,12 +16,15 @@ export interface AddPropertyProps {
     id: string;
 }
   
-export type Repair = {
-    repairID: string;
-    description: string;
-    propertId: string;
-    cost: number;
+export type RepairModel = {
+    id: string;
+    scheduledDate: Date;
     type: RepairType;
+    currentStatus: string;
+    description: string;
+    address: string;
+    cost: number;
+    propertyId: string;
 };
 
 export enum RepairType {
@@ -29,6 +32,13 @@ export enum RepairType {
     Electrical = 1,
     Painting = 2,
     Other = 3
+}
+
+export enum RepairStatus {
+    Pending = 0,
+    InProgress = 1,
+    Completed = 2,
+    Cancelled = 3
 }
 
 export type User = {
@@ -39,6 +49,7 @@ export type User = {
     address: string;
     phoneNumber: string;
     email: string;
+    password: string;
     properties: Property[];
 };
 
@@ -57,6 +68,12 @@ export interface PropertyFormData {
     yearOfConstruction: number;
     ownerID: string;
 }
+
+export interface PropertyData {
+    address: string;
+    yearOfConstruction: number;
+    ownerID: string;
+}
   
 export interface FormErrors {
     address?: string;
@@ -65,6 +82,7 @@ export interface FormErrors {
 }
 
 export interface UserFormData {
+    id: string;
     vatNumber: string;
     name: string;
     surname: string;

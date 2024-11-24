@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import fetchData from "@/app/utils/fetch";
 import { type PropertyFormData, type FormErrors, type Property } from "@/app/layout-types";
 
 export default function UpdateProperty() {
@@ -24,39 +25,7 @@ export default function UpdateProperty() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    async function fetchProperty() {
-      if (!id) {
-        setErrorMessage("No property ID provided");
-        return;
-      }
-
-      try {
-        const response = await fetch(`https://localhost:7166/api/Property/${id}`, {
-          method: "GET",
-        });
-        if (!response.ok) {
-          console.error('Fetch Property Detailed Error:')
-        }
-
-        const propertyData: Property = await response.json();
-
-        if (propertyData) {
-          setFormData({
-            propertyId: id,
-            address: propertyData.address,
-            yearOfConstruction: propertyData.yearOfConstruction,
-            ownerID: propertyData.ownerID
-          });
-        }
-
-      } catch (error) {
-        const errorMessage = (error as Error).message;
-        setErrorMessage(errorMessage);
-        console.error('Property Fetch Catch Error:', errorMessage);
-      }
-    }
-
-    fetchProperty();
+    fetchData<Property>('Property', id, setFormData);
   }, [id]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

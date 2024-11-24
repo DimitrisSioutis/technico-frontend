@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardFooter } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
-import { type UserFormErrors, type SimpleUser, type UserFormData } from "@/app/layout-types";
+import { type UserFormErrors,  type UserFormData } from "@/app/layout-types";
+import updateData from "@/app/utils/update";
+import createData from "@/app/utils/create";
 
 interface UserFormProps {
   formData: UserFormData;
@@ -13,10 +14,8 @@ interface UserFormProps {
 }
 
 const UserForm: React.FC<UserFormProps> = ({ formData, setFormData, id }) => {
-  const router = useRouter();
 
   const [errors, setErrors] = useState<UserFormErrors>({});
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const validateForm = (): boolean => {
     const newErrors: UserFormErrors = {};
@@ -42,42 +41,16 @@ const UserForm: React.FC<UserFormProps> = ({ formData, setFormData, id }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const postUser = async () => {
-    try {
-      const url = id 
-      ? `https://localhost:7166/api/User/${id}`
-      : `https://localhost:7166/api/User`;
-
-      const payload = {
-        ...formData,
-        id: id || undefined 
-      };
-
-      const response = await fetch(url, {
-        method: id?'PUT':'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Something went wrong while creating the user");
-      }
-
-      const user: SimpleUser = await response.json();
-      router.push(`/user/${user.id}`);
-    } catch (error) {
-      setErrorMessage((error as Error).message);
-    }
-  };
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (validateForm()) {
-      postUser();
+      if (!id) {
+        createData('User', formData);
+      } else {
+        updateData(id, 'User', formData);
+      }
+      
     }
   };
 
@@ -119,11 +92,9 @@ const UserForm: React.FC<UserFormProps> = ({ formData, setFormData, id }) => {
         <Input id="password" name="password" type="password" value={formData.password} onChange={handleChange} />
       </div>
 
-      {errorMessage && <p className="text-red-500 mt-4 text-center">{errorMessage}</p>}
-
       <CardFooter>
         <Button type="submit" className="w-full">
-          Sign Up
+          {id?<>Update</>:<>Sing up</>}
         </Button>
       </CardFooter>
     </form>

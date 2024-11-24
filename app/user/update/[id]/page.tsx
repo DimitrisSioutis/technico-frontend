@@ -1,15 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
-import { type UserFormData,  type User } from "@/app/layout-types";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { type UserFormData, type User } from "@/app/layout-types";
+import fetchData from "@/app/utils/fetch";
 import UserForm from "@/components/user/UserForm";
 
 const UpdateUser = () => {
   const params = useParams();
   const userId = Array.isArray(params.id) ? params.id[0] : params.id;
 
+  // State for the form data
   const [formData, setFormData] = useState<UserFormData>({
+    id:userId,
     vatNumber: "",
     name: "",
     surname: "",
@@ -19,43 +22,23 @@ const UpdateUser = () => {
     password: "",
   });
 
+  // Fetch user data and update the state
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await fetch(`https://localhost:7166/api/User/${userId}`, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || "Failed to fetch user data");
-        }
-
-        const userData: User = await response.json();
-        
-        // Only update form data if we have valid user data
-        if (userData) {
-          setFormData({
-            vatNumber: userData.vatNumber,
-            name: userData.name,
-            surname: userData.surname,
-            address: userData.address,
-            phoneNumber: userData.phoneNumber,
-            email: userData.email,
-            password: "", // Leave password empty as it's optional for updates
-          });
-        }
-      } catch (error) {
-        console.log((error as Error).message);
-      }
-    }
-
     if (userId) {
-      fetchUser();
+      fetchData<User>(userId, "User", (data: User) => {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          vatNumber: data.vatNumber ,
+          name: data.name,
+          surname: data.surname,
+          address: data.address,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+          password: data.password, 
+        }));
+      });
     }
   }, [userId]);
-
- 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
