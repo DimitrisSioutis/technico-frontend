@@ -6,9 +6,10 @@ import updateData from "@/app/utils/update";
 
 interface RepairProps {
   repair: RepairModel;
+  onRepairUpdated: ()=>void;
 }
 
-const Repair: React.FC<RepairProps> = ({ repair }) => {
+const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedRepair, setEditedRepair] = useState(repair);
 
@@ -18,6 +19,12 @@ const Repair: React.FC<RepairProps> = ({ repair }) => {
     setEditedRepair(repair); 
   };
 
+  const handleSaveEdit = async () => {
+    setIsEditing(false);
+    await updateData(repair.id, 'Repair', editedRepair);
+    onRepairUpdated(); 
+  };
+  
   const handleChange = (field: keyof RepairModel, value: any) => {
     setEditedRepair((prevRepair) => ({
       ...prevRepair,
@@ -88,9 +95,7 @@ const Repair: React.FC<RepairProps> = ({ repair }) => {
           </div>
           <div className="repair-actions">
             <button
-              onClick={()=>{
-                updateData(repair.id,'Repair',editedRepair)
-              }}
+              onClick={handleSaveEdit}
               title="Save changes"
             ><Check/></button>
             <button

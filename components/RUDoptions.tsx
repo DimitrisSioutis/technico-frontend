@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import {useRouter} from 'next/navigation'
 
 import { Eye, Trash2, Pencil } from 'lucide-react';
 import {
@@ -19,11 +18,15 @@ import deleteData from '@/app/utils/delete';
 interface RUDoptionsProps {
   model: string;
   id: string;
+  fetch: () => void; 
 }
 
-const RUDoptions: React.FC<RUDoptionsProps> = ({ model, id }) => {
+const RUDoptions: React.FC<RUDoptionsProps> = ({ model, id ,fetch}) => {
 
-  const router = useRouter();
+  const handleDelete = async () => {
+    await deleteData(model, id);
+    fetch();
+  };
 
   return (
     <div className='flex gap-4 py-2'>
@@ -45,11 +48,7 @@ const RUDoptions: React.FC<RUDoptionsProps> = ({ model, id }) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => {
-              deleteData(model, id)
-              router.push(`/user`)
-            }}>
+          <AlertDialogAction onClick={handleDelete}>
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

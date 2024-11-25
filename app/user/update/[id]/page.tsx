@@ -22,22 +22,37 @@ const UpdateUser = () => {
     password: "",
   });
 
-  // Fetch user data and update the state
   useEffect(() => {
-    if (userId) {
-      fetchData<User>(userId, "User", (data: User) => {
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          vatNumber: data.vatNumber ,
-          name: data.name,
-          surname: data.surname,
-          address: data.address,
-          phoneNumber: data.phoneNumber,
-          email: data.email,
+    const getUserData = async () => {
+      const data = await fetchData<User>(userId, 'User');
+      
+      if (data) {
+        setFormData({
+          id: data.id, 
+          vatNumber: data.vatNumber || "", 
+          name: data.name || "",
+          surname: data.surname || "",
+          address: data.address || "",
+          phoneNumber: data.phoneNumber || "",
+          email: data.email || "",
           password: data.password, 
-        }));
-      });
-    }
+        });
+      } else {
+        setFormData({
+          id: userId,
+          vatNumber: "",
+          name: "",
+          surname: "",
+          address: "",
+          phoneNumber: "",
+          email: "",
+          password: "",
+        });
+      }
+    };
+
+    if (userId) getUserData();
+  
   }, [userId]);
 
   return (

@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { useParams} from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,13 +12,14 @@ import { type PropertyFormData, type FormErrors, type Property } from "@/app/lay
 
 export default function UpdateProperty() {
   const params = useParams();
+  const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   
   const [formData, setFormData] = useState<PropertyFormData>({
     propertyId: id,
     address: "",
     yearOfConstruction: 0,
-    ownerID: ""
+    ownerID: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -25,16 +27,29 @@ export default function UpdateProperty() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchData<Property>('Property', id, setFormData);
+    const getPropertyData = async () => {
+        const data = await fetchData<Property>(id,'Property');
+
+        if (data) {
+          setFormData({
+            propertyId: data.propertyId,
+            address: data.address || "",
+            yearOfConstruction: data.yearOfConstruction || 0,
+            ownerID: data.ownerID || "",
+          });
+        }
+    };
+
+    if (id) getPropertyData();
   }, [id]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: name === 'yearOfConstruction' ? Number(value) : value 
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'yearOfConstruction' ? Number(value) : value,
     }));
-    
+
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
@@ -55,17 +70,15 @@ export default function UpdateProperty() {
   const postProperty = async () => {
     setIsLoading(true);
     setErrorMessage("");
-  
+
     try {
       const payload = {
         propertyId: id,
         address: formData.address,
         yearOfConstruction: formData.yearOfConstruction,
-        ownerID: formData.ownerID
+        ownerID: formData.ownerID,
       };
-  
-      console.log('Update Property Payload:', payload);
-  
+
       const response = await fetch(`https://localhost:7166/api/Property/${id}`, {
         method: "PUT",
         headers: {
@@ -73,34 +86,34 @@ export default function UpdateProperty() {
         },
         body: JSON.stringify(payload),
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Update Property Error:', {
           status: response.status,
           statusText: response.statusText,
-          errorText: errorText
+          errorText: errorText,
         });
-  
+
         setErrorMessage(errorText || 'Failed to update property');
         return;
       }
-  
     } catch (error) {
       const errorMessage = (error as Error).message;
       setErrorMessage(errorMessage);
       console.error('Property Update Catch Error:', errorMessage);
     } finally {
       setIsLoading(false);
+      router.push(`/user/${formData.ownerID}`)
     }
   };
-
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (validateForm()) {
       postProperty();
+
     }
   };
 

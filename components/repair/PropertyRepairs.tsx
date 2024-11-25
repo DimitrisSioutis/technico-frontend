@@ -4,9 +4,10 @@ import Repair from '../repair/Repair';
 
 interface PropertyRepairsProps {
     repairs: RepairModel[];
+    onRepairUpdated: ()=>void;
 }
 
-const PropertyRepairs: React.FC<PropertyRepairsProps> = ({repairs})  => {
+const PropertyRepairs: React.FC<PropertyRepairsProps> = ({repairs,onRepairUpdated})  => {
 
       if (!repairs) {
         return <p className="text-gray-600">Loading repairs...</p>;
@@ -18,7 +19,7 @@ const PropertyRepairs: React.FC<PropertyRepairsProps> = ({repairs})  => {
             <ul className="space-y-2">
                 {repairs.map((repair) => {
                   return (
-                    <Repair repair={repair} key={repair.id} />
+                    <Repair repair={repair} key={repair.id} onRepairUpdated={onRepairUpdated} />
                   );
                 })}
             </ul>

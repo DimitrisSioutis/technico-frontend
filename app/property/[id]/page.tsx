@@ -5,21 +5,29 @@ import { useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, Wrench, Hammer} from "lucide-react";
+import { Home, Wrench, Hammer } from "lucide-react";
 
 import PropertyRepairs from "@/components/repair/PropertyRepairs";
 import AddRepair from "@/components/repair/AddRepair";
 import { type Property } from "@/app/layout-types";
-import fetchData from "@/app/utils/fetch"
+import fetchData from "@/app/utils/fetch";
 
 export default function Property() {
   const params = useParams();
   const propertyId = Array.isArray(params.id) ? params.id[0] : params.id;
-
   const [property, setProperty] = useState<Property | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("repairs");
 
+  const fetchPropertyData = async () => {
+    setActiveTab("repairs");
+    if (propertyId) {
+      const data = await fetchData<Property>(propertyId, "Property");
+      setProperty(data || null);
+    }
+  };
+  
   useEffect(() => {
-    fetchData<Property>(propertyId,'Property',  setProperty);
+    fetchPropertyData();
   }, [propertyId]);
 
   return (
@@ -49,39 +57,42 @@ export default function Property() {
             </CardHeader>
           </Card>
 
-          <Tabs defaultValue="properties" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="properties">Repairs</TabsTrigger>
+              <TabsTrigger value="repairs">Repairs</TabsTrigger>
               <TabsTrigger value="add">Add Repair</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="properties">
+
+            <TabsContent value="repairs">
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center mb-4">
                     <Wrench className="h-5 w-5 mr-2 text-primary" />
                     <h3 className="text-lg font-semibold">Repairs</h3>
                   </div>
-                  <PropertyRepairs repairs={property.repairs} />
+                  <PropertyRepairs repairs={property.repairs} onRepairUpdated={fetchPropertyData}/>
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="add">
               <Card>
                 <CardContent className="pt-6">
-                  <AddRepair propertyId={property.propertyId as string} propertyAddress={property.address as string} />
+                  <AddRepair
+                    propertyId={property.propertyId}
+                    propertyAddress={property.address}
+                    onRepairAdded={fetchPropertyData}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
-
         </div>
       ) : (
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-center h-24">
-              <p className="text-muted-foreground">Loading user data...</p>
+              <p className="text-muted-foreground">Loading property data...</p>
             </div>
           </CardContent>
         </Card>

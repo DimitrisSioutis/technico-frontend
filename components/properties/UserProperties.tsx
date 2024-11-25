@@ -7,9 +7,10 @@ import RUDoptions from '../RUDoptions';
 
 interface UserPropertiesProps {
   properties: SimpleProperty[];
+  getUserData: () => void;
 }
 
-const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
+const UserProperties: React.FC<UserPropertiesProps> = ({properties,getUserData}) => {
 
   if (!properties) {
     return <LoaderCircle/>;
@@ -36,7 +37,7 @@ const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
                       </p>
                     </div>
                   </Link>
-                  <RUDoptions model={'property'} id={property.propertyId} />
+                  <RUDoptions model={'property'} id={property.propertyId} fetch={getUserData}/>
                 </li>
               );
             })}

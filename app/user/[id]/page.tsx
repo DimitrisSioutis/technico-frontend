@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {User as UserIcon, Mail, Home, Plus } from "lucide-react";
+import { User as UserIcon, Mail, Home, Plus } from "lucide-react";
 
 import UserProperties from "@/components/properties/UserProperties";
 import AddProperty from "@/components/properties/AddProperty";
@@ -17,15 +17,25 @@ export default function UserPage() {
   const userId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [user, setUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("properties");
+
+  const getUserData = async () => {
+    const data = await fetchData<User>(userId, 'User');
+    setUser(data || null); // Ensure the value is either User or null
+  };
 
   useEffect(() => {
-    fetchData<User>(userId,'User',  setUser);
+    if (userId) getUserData();
   }, [userId]);
 
-  
+  const handlePropertyAdded = async () => {
+    setActiveTab("properties");
+    const data = await fetchData<User>(userId, 'User');
+    setUser(data || null); 
+  };
 
   return (
-    <div className="container mx-auto py-6 ">
+    <div className="container mx-auto py-6">
       {!user && (
         <Alert variant="destructive" className="mb-6">
           <AlertTitle>Error</AlertTitle>
@@ -41,7 +51,9 @@ export default function UserPage() {
                   <UserIcon className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl font-bold">{user.name+' '+user.surname}</CardTitle>
+                  <CardTitle className="text-2xl font-bold">
+                    {user.name + " " + user.surname}
+                  </CardTitle>
                   <div className="flex items-center text-muted-foreground mt-1">
                     <Mail className="h-4 w-4 mr-2" />
                     <span>{user.email}</span>
@@ -51,12 +63,12 @@ export default function UserPage() {
             </CardHeader>
           </Card>
 
-          <Tabs defaultValue="properties" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="properties">Properties</TabsTrigger>
               <TabsTrigger value="add">Add Property</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="properties">
               <Card>
                 <CardContent className="pt-6">
@@ -64,11 +76,11 @@ export default function UserPage() {
                     <Home className="h-5 w-5 mr-2 text-primary" />
                     <h3 className="text-lg font-semibold">Properties</h3>
                   </div>
-                  <UserProperties properties={user.properties} />
+                  <UserProperties properties={user.properties} getUserData={getUserData} />
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="add">
               <Card>
                 <CardContent className="pt-6">
@@ -76,7 +88,7 @@ export default function UserPage() {
                     <Plus className="h-5 w-5 mr-2 text-primary" />
                     <h3 className="text-lg font-semibold">Add New Property</h3>
                   </div>
-                  <AddProperty id={userId} />
+                  <AddProperty id={userId} onPropertyAdded={handlePropertyAdded} />
                 </CardContent>
               </Card>
             </TabsContent>

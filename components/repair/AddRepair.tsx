@@ -6,10 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { RepairType } from "@/app/layout-types";
+import createData from "@/app/utils/create";
 
 interface AddRepairProps {
     propertyId: string;
     propertyAddress: string;
+    onRepairAdded: () => void;
 }
 
 interface FormData {
@@ -29,7 +31,7 @@ interface FormErrors {
     cost?: string;
 }
 
-export default function AddRepair({ propertyId, propertyAddress }: AddRepairProps) {
+export default function AddRepair({ propertyId, propertyAddress,onRepairAdded }: AddRepairProps) {
     const [formData, setFormData] = useState<FormData>({
         scheduledDate: "",
         type: 0,
@@ -40,7 +42,6 @@ export default function AddRepair({ propertyId, propertyAddress }: AddRepairProp
         address: propertyAddress
     });
     const [errors, setErrors] = useState<FormErrors>({});
-    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -74,51 +75,15 @@ export default function AddRepair({ propertyId, propertyAddress }: AddRepairProp
         return Object.keys(newErrors).length === 0;
     };
 
-    async function postRepair() {
-        try {
-            const payload = {
-                scheduledDate: new Date(formData.scheduledDate).toISOString(),
-                type: Number(formData.type), 
-                currentStatus: 0,
-                description: formData.description.trim(), 
-                address: formData.address.trim(),
-                cost: Number(formData.cost), 
-                propertyId: formData.propertyId
-            };
-
-            console.log('Full payload:', JSON.stringify(payload, null, 2));
-    
-            const response = await fetch("https://localhost:7166/api/Repair", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const responseText = await response.text();
-            console.log('Raw response text:', responseText);
-    
-            if (!response.ok) {
-                throw new Error(responseText);
-            }
-    
-            const result = JSON.parse(responseText);
-            return result;
-        } catch (error) {
-            setErrorMessage((error as Error).message);
-            throw error;
-        }
-    }
-
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     
         if (validateForm()) {
-            await postRepair();
+          await createData("Repair", formData);
+          onRepairAdded();
         }
-    };
+      };
     return (
         <form onSubmit={handleSubmit} className="space-y-4 w-2/3 mx-auto">
             <div>
@@ -184,10 +149,6 @@ export default function AddRepair({ propertyId, propertyAddress }: AddRepairProp
                     onChange={handleChange}
                 />
             </div>
-
-            {errorMessage && (
-                <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
-            )}
 
             <Button type="submit" className="w-full flex">
                 <Plus className="h-8 w-8 mr-2 text-slate-50" />

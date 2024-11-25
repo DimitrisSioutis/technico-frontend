@@ -1,14 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import {useRouter} from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {Plus} from "lucide-react";
-import { type PropertyData , type FormErrors ,type AddPropertyProps } from "@/app/layout-types";
+import { Plus } from "lucide-react";
+import { type PropertyData, type FormErrors, type AddPropertyProps } from "@/app/layout-types";
 import createData from "@/app/utils/create";
 
-export default function AddProperty({ id }: AddPropertyProps) {
-  const router = useRouter();
+export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & { onPropertyAdded: () => void }) {
   const [formData, setFormData] = useState<PropertyData>({
     address: "",
     yearOfConstruction: 0,
@@ -26,18 +24,18 @@ export default function AddProperty({ id }: AddPropertyProps) {
     const newErrors: FormErrors = {};
 
     if (!formData.address) newErrors.address = "Address is required";
-    if (!formData.yearOfConstruction || formData.yearOfConstruction>2030) newErrors.yearOfConstruction = "Year of Construction is required";
+    if (!formData.yearOfConstruction || formData.yearOfConstruction > 2030) newErrors.yearOfConstruction = "Year of Construction is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (validateForm()) {
-      createData('Property',formData)
-      router.push(`/user/${id}`)
+      await createData("Property", formData);
+      onPropertyAdded();
     }
   };
 
@@ -46,28 +44,20 @@ export default function AddProperty({ id }: AddPropertyProps) {
       <div>
         <Label htmlFor="address">Address</Label>
         {errors.address && <span className="pl-4 text-red-500 text-sm">{errors.address}</span>}
-        <Input
-          id="address"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-        />
+        <Input id="address" name="address" value={formData.address} onChange={handleChange} />
       </div>
 
       <div>
         <Label htmlFor="yearOfConstruction">Year of Construction</Label>
-        {errors.yearOfConstruction && <span className="pl-4 text-red-500 text-sm">{errors.yearOfConstruction}</span>}
-        <Input
-          id="yearOfConstruction"
-          name="yearOfConstruction"
-          value={formData.yearOfConstruction}
-          onChange={handleChange}
-        />
+        {errors.yearOfConstruction && (
+          <span className="pl-4 text-red-500 text-sm">{errors.yearOfConstruction}</span>
+        )}
+        <Input id="yearOfConstruction" name="yearOfConstruction" value={formData.yearOfConstruction} onChange={handleChange} />
       </div>
 
       <Button type="submit" className="w-full flex">
-            <Plus className="h-8 w-8 mr-2 text-slate-50" />
-            <h3 className="text-lg font-semibold">Add Property</h3>
+        <Plus className="h-8 w-8 mr-2 text-slate-50" />
+        <h3 className="text-lg font-semibold">Add Property</h3>
       </Button>
     </form>
   );

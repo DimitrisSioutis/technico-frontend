@@ -9,25 +9,25 @@ export default function UserPage() {
   const [users, setUsers] = useState<SimpleUser[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const response = await fetch('https://localhost:7166/api/User', { method: 'GET' });
+  async function fetchUsers() {
+    try {
+      const response = await fetch('https://localhost:7166/api/User', { method: 'GET' });
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'Failed to fetch user data');
-        }
-
-        const data: SimpleUser[] = await response.json();
-        setUsers(data);
-      } catch (error) {
-        setErrorMessage((error as Error).message);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch user data');
       }
-    }
 
+      const data: SimpleUser[] = await response.json();
+      setUsers(data);
+    } catch (error) {
+      setErrorMessage((error as Error).message);
+    }
+  }
+  
+  useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [users]);
 
   return (
     <Card className="w-full max-w-xl mx-auto">
@@ -41,7 +41,7 @@ export default function UserPage() {
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
-        <Users users={users}/>
+        <Users users={users} fetchUsers={fetchUsers}/>
       </CardContent>
     </Card>
   );

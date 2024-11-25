@@ -15,7 +15,7 @@ async function createData(model: string, data: object) {
     return await response.json();
   } catch (error) {
     console.error("Create Data Error:", error);
-    throw error;  // Re-throw to handle in the component
+    throw error; 
   }
 }
 
