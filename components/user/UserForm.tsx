@@ -1,11 +1,15 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+
+import { type UserFormErrors,  type UserFormData } from "@/app/layout-types";
+import updateData from "@/app/utils/update";
+import createData from "@/app/utils/create";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardFooter } from "@/components/ui/card";
-import { type UserFormErrors,  type UserFormData } from "@/app/layout-types";
-import updateData from "@/app/utils/update";
-import createData from "@/app/utils/create";
+
 
 interface UserFormProps {
   formData: UserFormData;
@@ -16,6 +20,7 @@ interface UserFormProps {
 const UserForm: React.FC<UserFormProps> = ({ formData, setFormData, id }) => {
 
   const [errors, setErrors] = useState<UserFormErrors>({});
+  const router = useRouter()
 
   const validateForm = (): boolean => {
     const newErrors: UserFormErrors = {};
@@ -45,12 +50,12 @@ const UserForm: React.FC<UserFormProps> = ({ formData, setFormData, id }) => {
     e.preventDefault();
 
     if (validateForm()) {
-      if (!id) {
-        createData('User', formData);
-      } else {
+      if (id) {
         updateData(id, 'User', formData);
+      } else {
+        createData('User', formData);
       }
-      
+      router.push('/user')
     }
   };
 

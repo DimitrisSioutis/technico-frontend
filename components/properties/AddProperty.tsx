@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import {useRouter} from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +8,7 @@ import { type PropertyData , type FormErrors ,type AddPropertyProps } from "@/ap
 import createData from "@/app/utils/create";
 
 export default function AddProperty({ id }: AddPropertyProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState<PropertyData>({
     address: "",
     yearOfConstruction: 0,
@@ -14,7 +16,6 @@ export default function AddProperty({ id }: AddPropertyProps) {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,6 +37,7 @@ export default function AddProperty({ id }: AddPropertyProps) {
 
     if (validateForm()) {
       createData('Property',formData)
+      router.push(`/user/${id}`)
     }
   };
 
@@ -63,9 +65,6 @@ export default function AddProperty({ id }: AddPropertyProps) {
         />
       </div>
 
-      {errorMessage && (
-        <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
-      )}
       <Button type="submit" className="w-full flex">
             <Plus className="h-8 w-8 mr-2 text-slate-50" />
             <h3 className="text-lg font-semibold">Add Property</h3>

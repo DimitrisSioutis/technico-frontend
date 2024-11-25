@@ -1,21 +1,22 @@
-async function createData(model:string, data:object) {
-    try {
-      const response = await fetch(`https://localhost:7166/api/${model}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+async function createData(model: string, data: object) {
+  try {
+    const response = await fetch(`https://localhost:7166/api/${model}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Something went wrong while creating the property");
-      }
-
-    } catch (error) {
-      console.log((error as Error).message);
+    if (!response.ok) {
+      throw new Error('Failed to create data');
     }
-  }
 
-  export default createData;
+    return await response.json();
+  } catch (error) {
+    console.error("Create Data Error:", error);
+    throw error;  // Re-throw to handle in the component
+  }
+}
+
+export default createData;
