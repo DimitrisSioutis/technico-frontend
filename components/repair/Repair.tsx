@@ -113,11 +113,11 @@ const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
           <p>Scheduled for: {new Date(repair.scheduledDate).toLocaleDateString()}</p>
           <p>Cost: {repair.cost}€</p>
         </div>
-        <div className="repair-actions">
-          <button onClick={handleEdit}>
+        <div >
+          <button onClick={handleEdit} className="m-2">
             <Pencil/>
             </button>
-          <button onClick={()=>deleteData('Repair',repair.id)}>
+          <button onClick={()=>deleteData('Repair',repair.id)} className="m-2">
             <Trash2/>
            </button>
         </div>

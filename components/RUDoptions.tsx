@@ -37,7 +37,7 @@ const RUDoptions: React.FC<RUDoptionsProps> = ({ model, id ,fetch}) => {
         <Pencil color="rgb(75 85 99)" />
       </Link>
       <AlertDialog>
-      <AlertDialogTrigger><Trash2 color="rgb(75 85 99)"/></AlertDialogTrigger>
+      <AlertDialogTrigger><Trash2 color="red"/></AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -48,7 +48,7 @@ const RUDoptions: React.FC<RUDoptionsProps> = ({ model, id ,fetch}) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete}>
+          <AlertDialogAction onClick={handleDelete} className='hover:bg-red-400'>
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

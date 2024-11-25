@@ -3,31 +3,31 @@ import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Users from "@/components/user/Users";
+import UsersSkeleton from "@/components/skeletons/UsersSkeleton";
 import { type SimpleUser } from "../layout-types";
+import fetchAll from "../utils/fetchAll";
 
 export default function UserPage() {
   const [users, setUsers] = useState<SimpleUser[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  async function fetchUsers() {
+  const fetchUsers = async () => {
     try {
-      const response = await fetch('https://localhost:7166/api/User', { method: 'GET' });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to fetch user data');
-      }
-
-      const data: SimpleUser[] = await response.json();
+      const data = await fetchAll<SimpleUser[]>("User");
       setUsers(data);
-    } catch (error) {
-      setErrorMessage((error as Error).message);
+    } catch (error:any) {
+      setErrorMessage(error.message || "Failed to fetch user data.");
+    } finally {
+      setLoading(false);
     }
-  }
-  
+  };
+
   useEffect(() => {
     fetchUsers();
-  }, [users]);
+  }, []);
+
+  if (loading) return <UsersSkeleton />;
 
   return (
     <Card className="w-full max-w-xl mx-auto">
@@ -41,7 +41,7 @@ export default function UserPage() {
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
-        <Users users={users} fetchUsers={fetchUsers}/>
+        <Users users={users} fetchUsers={fetchUsers} />
       </CardContent>
     </Card>
   );

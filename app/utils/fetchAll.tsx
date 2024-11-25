@@ -1,12 +1,12 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 async function fetchAll<T>(endpoint: string): Promise<T> {
   try {
-    const res = await fetch(`https://localhost:7166/api/${endpoint}`, { 
+    const res = await fetch(`https://localhost:7166/api/${endpoint}`, {
       cache: "no-store",
       headers: {
-        'Accept': 'application/json'
-      }
+        Accept: "application/json",
+      },
     });
 
     if (!res.ok) {
@@ -14,7 +14,7 @@ async function fetchAll<T>(endpoint: string): Promise<T> {
       throw new Error(`Failed to fetch ${endpoint} data: ${res.status} ${errorBody}`);
     }
 
-    return res.json();
+    return await res.json();
   } catch (error) {
     console.error(`Fetch error for ${endpoint}:`, error);
     throw error;

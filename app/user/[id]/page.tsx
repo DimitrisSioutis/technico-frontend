@@ -12,37 +12,39 @@ import AddProperty from "@/components/properties/AddProperty";
 import { type User } from "@/app/layout-types";
 import fetchData from "@/app/utils/fetch";
 
+import UserLoadingSkeleton from "@/components/skeletons/UserSkeleton";
+
 export default function UserPage() {
   const params = useParams();
   const userId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<string>("properties");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const getUserData = async () => {
+    setActiveTab("properties");
+    setLoading(true);
     const data = await fetchData<User>(userId, 'User');
     setUser(data || null); // Ensure the value is either User or null
+    setLoading(false);
   };
 
   useEffect(() => {
     if (userId) getUserData();
   }, [userId]);
 
-  const handlePropertyAdded = async () => {
-    setActiveTab("properties");
-    const data = await fetchData<User>(userId, 'User');
-    setUser(data || null); 
-  };
-
   return (
     <div className="container mx-auto py-6">
-      {!user && (
+      {loading ? (
+        <div className="grid gap-6 w-1/2 m-auto">
+          <UserLoadingSkeleton />
+        </div>
+      ) : !user ? (
         <Alert variant="destructive" className="mb-6">
           <AlertTitle>Error</AlertTitle>
         </Alert>
-      )}
-
-      {user ? (
+      ) : (
         <div className="grid gap-6 w-1/2 m-auto">
           <Card className="shadow-lg">
             <CardHeader className="pb-4">
@@ -88,20 +90,12 @@ export default function UserPage() {
                     <Plus className="h-5 w-5 mr-2 text-primary" />
                     <h3 className="text-lg font-semibold">Add New Property</h3>
                   </div>
-                  <AddProperty id={userId} onPropertyAdded={handlePropertyAdded} />
+                  <AddProperty id={userId} onPropertyAdded={getUserData} />
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
         </div>
-      ) : (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-center h-24">
-              <p className="text-muted-foreground">Loading User data...</p>
-            </div>
-          </CardContent>
-        </Card>
       )}
     </div>
   );
