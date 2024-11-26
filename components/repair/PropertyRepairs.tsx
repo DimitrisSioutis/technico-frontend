@@ -1,5 +1,5 @@
 import React from 'react'
-import { type RepairModel } from '@/app/layout-types';
+import { type RepairModel } from '@/app/types';
 import Repair from '../repair/Repair';
 
 interface PropertyRepairsProps {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pencil, Check, Trash2 } from "lucide-react";
-import { type RepairModel , RepairStatus , RepairType} from "@/app/layout-types";
+import { type RepairModel , RepairStatus , RepairType} from "@/app/types";
 import deleteData from "@/app/utils/delete";
 import updateData from "@/app/utils/update";
 

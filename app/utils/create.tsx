@@ -1,4 +1,4 @@
-async function createData(model: string, data: object) {
+export default async function createData(model: string, data: object) {
   try {
     const response = await fetch(`https://localhost:7166/api/${model}`, {
       method: "POST",
@@ -18,5 +18,3 @@ async function createData(model: string, data: object) {
     throw error; 
   }
 }
-
-export default createData;

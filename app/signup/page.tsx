@@ -1,20 +1,15 @@
 "use client";
-import React, { useState} from "react";
-import { Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
-import { type UserFormData} from "@/app/layout-types";
-import UserForm from "@/components/user/UserForm";
 
+import React from "react";
+import { useFormState } from "react-dom"; // Replace with the actual import path
+import { register } from "../actions/userController"; // Ensure this action matches the expected signature
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import SignUpForm from "@/components/user/SignUpForm";
 
-export default function SignUp() {
-  const [formData, setFormData] = useState<UserFormData>({
-    vatNumber: "",
-    name: "",
-    surname: "",
-    address: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-  });
+const SignUp = () => {
+
+  const initialState = { errors: {}, success: undefined };
+  const [formState, formAction] = useFormState(register, initialState);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -23,9 +18,11 @@ export default function SignUp() {
           <CardTitle>Sign Up</CardTitle>
         </CardHeader>
         <CardContent>
-          <UserForm formData={formData} setFormData={setFormData} />
+          <SignUpForm formAction={formAction} formState={formState} />
         </CardContent>
       </Card>
     </div>
   );
-}
+};
+
+export default SignUp;

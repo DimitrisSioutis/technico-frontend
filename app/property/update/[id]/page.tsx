@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import fetchData from "@/app/utils/fetch";
-import { type PropertyFormData, type FormErrors, type Property } from "@/app/layout-types";
+import { type PropertyFormData, type FormErrors, type Property } from "@/app/types";
 
 export default function UpdateProperty() {
   const params = useParams();

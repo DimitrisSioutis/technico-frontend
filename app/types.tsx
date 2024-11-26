@@ -82,7 +82,7 @@ export interface FormErrors {
 }
 
 export interface UserFormData {
-    id: string;
+    id:string;
     vatNumber: string;
     name: string;
     surname: string;
@@ -91,7 +91,6 @@ export interface UserFormData {
     email: string;
     password: string;
 }
-  
 
 export interface UserFormErrors {
     vatNumber?: string;

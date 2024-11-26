@@ -2,7 +2,7 @@
 import React from 'react'
 import Link from 'next/link';
 import { LoaderCircle } from 'lucide-react';
-import { SimpleProperty } from '@/app/layout-types';
+import { SimpleProperty } from '@/app/types';
 import RUDoptions from '../RUDoptions';
 
 interface UserPropertiesProps {

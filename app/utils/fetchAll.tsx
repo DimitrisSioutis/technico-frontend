@@ -1,6 +1,6 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-async function fetchAll<T>(endpoint: string): Promise<T> {
+export default async function fetchAll<T>(endpoint: string): Promise<T> {
   try {
     const res = await fetch(`https://localhost:7166/api/${endpoint}`, {
       cache: "no-store",
@@ -20,5 +20,3 @@ async function fetchAll<T>(endpoint: string): Promise<T> {
     throw error;
   }
 }
-
-export default fetchAll;

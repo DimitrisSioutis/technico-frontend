@@ -1,4 +1,4 @@
-import type { User } from "@/app/layout-types";
+import type { User } from "@/app/types";
 import fetchData from "@/app/utils/fetch";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

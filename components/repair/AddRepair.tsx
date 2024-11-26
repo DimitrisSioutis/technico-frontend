@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import { RepairType } from "@/app/layout-types";
+import { RepairType } from "@/app/types";
 import createData from "@/app/utils/create";
 
 interface AddRepairProps {

@@ -1,59 +1,50 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { type UserFormData, type User } from "@/app/layout-types";
+import { type User } from "@/app/types";
+import { useFormState } from "react-dom";
+import { register } from "@/app/actions/userController";
 import fetchData from "@/app/utils/fetch";
-import UserForm from "@/components/user/UserForm";
+import SignUpForm from "@/components/user/SignUpForm";
 
-const UpdateUser = () => {
-  const params = useParams();
-  const userId = Array.isArray(params.id) ? params.id[0] : params.id;
+// Refined FormState type
+interface FormState {
+  errors?: {
+    vatNumber?: string;
+    name?: string;
+    surname?: string;
+    address?: string;
+    phoneNumber?: string;
+    email?: string;
+    password?: string;
+  };
+  success?: boolean;
+}
 
-  // State for the form data
-  const [formData, setFormData] = useState<UserFormData>({
-    id:userId,
-    vatNumber: "",
-    name: "",
-    surname: "",
-    address: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-  });
+type UserProps = { params: { id: string } };
+
+const UpdateUser: React.FC<UserProps> = ({ params }) => {
+  const [user, setUser] = useState<User | undefined>(undefined);
+  
+  const initialState: FormState = {
+    errors: {},
+    success: false
+  };
+  
+  const [formState, formAction] = useFormState(
+    (state: FormState, formData: FormData) => register(state, formData), 
+    initialState
+  );
 
   useEffect(() => {
-    const getUserData = async () => {
-      const data = await fetchData<User>(userId, 'User');
-      
-      if (data) {
-        setFormData({
-          id: data.id, 
-          vatNumber: data.vatNumber || "", 
-          name: data.name || "",
-          surname: data.surname || "",
-          address: data.address || "",
-          phoneNumber: data.phoneNumber || "",
-          email: data.email || "",
-          password: data.password, 
-        });
-      } else {
-        setFormData({
-          id: userId,
-          vatNumber: "",
-          name: "",
-          surname: "",
-          address: "",
-          phoneNumber: "",
-          email: "",
-          password: "",
-        });
+    const fetchUser = async () => {
+      const fetchedUser = await fetchData<User | undefined>(params.id, "User");
+      if (fetchedUser) {
+        setUser(fetchedUser);
       }
     };
-
-    if (userId) getUserData();
-  
-  }, [userId]);
+    fetchUser();
+  }, [params.id]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -62,7 +53,27 @@ const UpdateUser = () => {
           <CardTitle>Update Profile</CardTitle>
         </CardHeader>
         <CardContent>
-          <UserForm formData={formData} setFormData={setFormData} id={userId} />
+          {user ? (
+            <SignUpForm 
+              formAction={formAction} 
+              formState={{
+                errors: formState.errors,
+                values: {
+                  vatNumber: user.vatNumber,
+                  name: user.name,
+                  surname: user.surname,
+                  address: user.address,
+                  phoneNumber: user.phoneNumber,
+                  email: user.email,
+                  password:user.password
+                }
+              }} 
+              isUpdate={true}
+              userId={user.id}
+            />
+          ) : (
+            <p>Loading user data...</p>
+          )}
         </CardContent>
       </Card>
     </div>

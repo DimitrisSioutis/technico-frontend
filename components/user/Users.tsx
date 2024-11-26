@@ -1,5 +1,5 @@
 import React from 'react';
-import { type SimpleUser } from '@/app/layout-types';
+import { type SimpleUser } from '@/app/types';
 import RUDoptions from '../RUDoptions';
 
 interface UserProps {

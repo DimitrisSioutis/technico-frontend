@@ -9,7 +9,7 @@ import { User as UserIcon, Mail, Home, Plus } from "lucide-react";
 import UserProperties from "@/components/properties/UserProperties";
 import AddProperty from "@/components/properties/AddProperty";
 
-import { type User } from "@/app/layout-types";
+import { type User } from "@/app/types";
 import fetchData from "@/app/utils/fetch";
 
 import UserLoadingSkeleton from "@/components/skeletons/UserSkeleton";

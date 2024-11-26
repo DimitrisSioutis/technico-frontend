@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
-import { type PropertyData, type FormErrors, type AddPropertyProps } from "@/app/layout-types";
+import { type PropertyData, type FormErrors, type AddPropertyProps } from "@/app/types";
 import createData from "@/app/utils/create";
 
 export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & { onPropertyAdded: () => void }) {

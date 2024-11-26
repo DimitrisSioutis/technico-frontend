@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import { type UserFormErrors,  type UserFormData } from "@/app/layout-types";
+import { type UserFormErrors,  type UserFormData } from "@/app/types";
 import updateData from "@/app/utils/update";
 import createData from "@/app/utils/create";
 
