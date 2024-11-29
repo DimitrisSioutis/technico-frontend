@@ -8,13 +8,13 @@ export default async function createData(model: string, data: object) {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create data');
-    }
-
-    return await response.json();
+    const result = await response.json();
+    return {
+      status: response.status,
+      data: result,
+    };
   } catch (error) {
     console.error("Create Data Error:", error);
-    throw error; 
+    throw error;
   }
 }

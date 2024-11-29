@@ -35,6 +35,16 @@ const Property: React.FC<PropertyProps> = ({ property, getUserData }) => {
     }));
   };
 
+  const handleDelete = async () => {
+    console.log('Delete button clicked');
+    try {
+      await deleteData('Property', property.propertyId);
+      await getUserData();
+    } catch (error) {
+      console.error('Error deleting property:', error);
+    }
+  };
+
   return (
     <li
       key={property.propertyId}
@@ -51,11 +61,12 @@ const Property: React.FC<PropertyProps> = ({ property, getUserData }) => {
         <PropertyView 
           property={property} 
           onEdit={handleEdit}
-          onDelete={() => deleteData(property.propertyId, 'Property')}
+          getUserData={getUserData}
+          onDelete={handleDelete}
         />
       )}
     </li>
   )
 }
 
-export default Property
+export default Property;

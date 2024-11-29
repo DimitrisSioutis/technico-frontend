@@ -57,24 +57,6 @@ export const register = async (prevState: FormState, formData: FormData): Promis
         }
     }
 
-    const response = await fetch(`https://localhost:7166/api/User`, {
-        cache: "no-store",
-        headers: {
-            Accept: "application/json",
-        },
-    });
-
-    const users: UserData[] = await response.json();
-
-    // Check for existing email, but only if it's a different user
-    const emailExists = users.find(
-        user => user.email === email && (!userId || user.id !== userId)
-    );
-
-    if (emailExists) {
-        errors.email = "That email is already in use";
-    }
-
     if (Object.keys(errors).length > 0) {
         return { errors };
     }
@@ -92,7 +74,23 @@ export const register = async (prevState: FormState, formData: FormData): Promis
     if (userId) {
         await updateData('User', userId, userData);
     } else {
-        await createData('User', userData);
+        const response = await  createData('User', userData);
+        if(response.status == 409){
+            if(response.data.message === 'User with this Email already exists'){
+                errors.email = response.data.message
+            }
+
+            if(response.data.message === 'User with this Vat already exists'){
+                errors.vatNumber = response.data.message
+            }
+
+            if(response.data.message === 'User with this VAT & Email already exists'){
+                errors.vatNumber = 'User with this VAT already exists'
+                errors.email = 'User with this Email already exists'
+            }
+
+            return { errors }
+        }
     }
 
     return {

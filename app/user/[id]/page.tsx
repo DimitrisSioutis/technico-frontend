@@ -26,7 +26,7 @@ export default function UserPage() {
     setActiveTab("properties");
     setLoading(true);
     const data = await fetchData<User>(userId, 'User');
-    setUser(data || null); // Ensure the value is either User or null
+    setUser(data || null);
     setLoading(false);
   };
 

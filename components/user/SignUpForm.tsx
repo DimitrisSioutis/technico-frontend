@@ -23,12 +23,11 @@ interface SignUpFormProps {
 const SignUpForm: React.FC<SignUpFormProps> = ({ formAction, formState, isUpdate = false,userId }) => {
   const router = useRouter();
 
-  useEffect(()=>{
-    console.log('state changded')
-    if(formState.errors == undefined){
-      router.push('/user')
-    }
-  },[formState])
+  // useEffect(()=>{
+  //   if(formState.errors == undefined){
+  //     router.push('/user')
+  //   }
+  // },[formState])
 
   console.log(formState)
   return (

@@ -14,6 +14,7 @@ export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & 
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [error, setError] = useState('');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,7 +35,11 @@ export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & 
     e.preventDefault();
 
     if (validateForm()) {
-      await createData("Property", formData);
+      const response = await createData("Property", formData);
+      if(response.status==409){
+        setError(response.data.message)
+        return;
+      }
       onPropertyAdded();
     }
   };
@@ -55,6 +60,9 @@ export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & 
         <Input id="yearOfConstruction" name="yearOfConstruction" value={formData.yearOfConstruction} onChange={handleChange} />
       </div>
 
+      <div className="h-10">
+        {error.length>0 && <span className="text-red">{error}</span>}
+      </div>
       <Button type="submit" className="w-full flex">
         <Plus className="h-8 w-8 mr-2 text-slate-50" />
         <h3 className="text-lg font-semibold">Add Property</h3>
