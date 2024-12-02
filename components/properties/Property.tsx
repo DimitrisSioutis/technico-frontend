@@ -2,18 +2,18 @@ import React, { useState } from 'react'
 import PropertyView from './PropertyView'
 import PropertyEdit from './PropertyEdit'
 import { type SimpleProperty } from '@/app/types'
-import updateData from '@/app/utils/update'
-import deleteData from '@/app/utils/delete'
+import updateData from '@/utils/update'
+import deleteData from '@/utils/delete'
+import { useUserContext } from '../user/UserContext'
 
-// Define the PropertyProps interface
 interface PropertyProps {
   property: SimpleProperty;
-  getUserData: () => void;
 }
 
-const Property: React.FC<PropertyProps> = ({ property, getUserData }) => {
+const Property: React.FC<PropertyProps> = ({ property }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProperty, setEditedProperty] = useState(property);
+  const {refetch} = useUserContext();
 
   const handleEdit = () => setIsEditing(true);
   
@@ -25,7 +25,7 @@ const Property: React.FC<PropertyProps> = ({ property, getUserData }) => {
   const handleSaveEdit = async () => {
     setIsEditing(false);
     await updateData('Property', property.propertyId, editedProperty);
-    getUserData();
+    refetch();
   };
 
   const handleChange = (field: keyof SimpleProperty, value: any) => {
@@ -36,10 +36,9 @@ const Property: React.FC<PropertyProps> = ({ property, getUserData }) => {
   };
 
   const handleDelete = async () => {
-    console.log('Delete button clicked');
     try {
       await deleteData('Property', property.propertyId);
-      await getUserData();
+      refetch();
     } catch (error) {
       console.error('Error deleting property:', error);
     }
@@ -61,7 +60,6 @@ const Property: React.FC<PropertyProps> = ({ property, getUserData }) => {
         <PropertyView 
           property={property} 
           onEdit={handleEdit}
-          getUserData={getUserData}
           onDelete={handleDelete}
         />
       )}

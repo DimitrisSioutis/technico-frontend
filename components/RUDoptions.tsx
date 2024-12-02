@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import deleteData from '@/app/utils/delete';
+import deleteData from '@/utils/delete';
 
 interface RUDoptionsProps {
   model: string;

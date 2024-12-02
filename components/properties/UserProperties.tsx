@@ -1,27 +1,20 @@
 "use client"
 import React from 'react'
-import { LoaderCircle } from 'lucide-react';
 import { SimpleProperty } from '@/app/types';
 import Property from './Property';
 
 
 interface UserPropertiesProps {
   properties: SimpleProperty[];
-  getUserData: () => void;
 }
 
-const UserProperties: React.FC<UserPropertiesProps> = ({properties,getUserData}) => {
-
-  if (!properties) {
-    return <LoaderCircle/>;
-  }
-
+const UserProperties: React.FC<UserPropertiesProps> = ({properties}) => {
   return (
     <div>
         {properties.length > 0 ? (
         <ul className="space-y-2">
             {properties.map((property,index) => 
-                <Property key={index} property={property} getUserData={getUserData}/>
+                <Property key={index} property={property}/>
             )}
         </ul>
         ) : (

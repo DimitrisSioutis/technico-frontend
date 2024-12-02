@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Users from "@/components/user/Users";
 import UsersSkeleton from "@/components/skeletons/UsersSkeleton";
 import { type SimpleUser } from "../types";
-import fetchAll from "../utils/fetchAll";
+import fetchAll from "../../utils/fetchAll";
 
 export default function UserPage() {
   const [users, setUsers] = useState<SimpleUser[]>([]);

@@ -1,5 +1,5 @@
 import type { User } from "@/app/types";
-import fetchData from "@/app/utils/fetch";
+import fetchData from "@/utils/fetch";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {User as UserIcon, Mail, Home, Plus } from "lucide-react";

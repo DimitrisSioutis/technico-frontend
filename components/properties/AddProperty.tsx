@@ -3,18 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
-import { type PropertyData, type FormErrors, type AddPropertyProps } from "@/app/types";
-import createData from "@/app/utils/create";
+import { PropertyData, FormErrors } from "@/app/types";
+import createData from "@/utils/create";
+import { useUserContext } from "../user/UserContext";
 
-export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & { onPropertyAdded: () => void }) {
+export default function AddProperty() {
+  const { user, setActiveTab, refetch } = useUserContext();
+  const userId = user?.id;
+
   const [formData, setFormData] = useState<PropertyData>({
     address: "",
     yearOfConstruction: 0,
-    ownerID: id,
+    ownerID: userId,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,11 +40,13 @@ export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & 
 
     if (validateForm()) {
       const response = await createData("Property", formData);
-      if(response.status==409){
-        setError(response.data.message)
+      if (response.status === 409) {
+        setError(response.data.message);
         return;
       }
-      onPropertyAdded();
+
+      setActiveTab("properties");
+      refetch(); 
     }
   };
 
@@ -61,7 +67,7 @@ export default function AddProperty({ id, onPropertyAdded }: AddPropertyProps & 
       </div>
 
       <div className="h-10">
-        {error.length>0 && <span className="text-red">{error}</span>}
+        {error.length > 0 && <span className="text-red">{error}</span>}
       </div>
       <Button type="submit" className="w-full flex">
         <Plus className="h-8 w-8 mr-2 text-slate-50" />

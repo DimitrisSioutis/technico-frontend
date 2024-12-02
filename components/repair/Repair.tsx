@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Pencil, Check, Trash2 } from "lucide-react";
 import { type RepairModel , RepairStatus , RepairType} from "@/app/types";
-import deleteData from "@/app/utils/delete";
-import updateData from "@/app/utils/update";
+import deleteData from "@/utils/delete";
+import updateData from "@/utils/update";
 
 interface RepairProps {
   repair: RepairModel;
@@ -39,18 +39,25 @@ const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
           <div className="repair-details">
             <div className="repair-field">
               <label htmlFor="type">Type:</label>
-              <input
-                type="text"
-                id="type"
-                className="border rounded-md"
+              <select
+                className="border rounded-md p-1 m-1"
+                id="currentStatus"
                 value={editedRepair.type}
-                onChange={(e) => handleChange("type", e.target.value)}
-              />
+                onChange={(e) => handleChange("type", parseInt(e.target.value))} 
+              >
+                {Object.entries(RepairType)
+                  .filter(([key, value]) => !isNaN(Number(value))) 
+                  .map(([key, value]) => (
+                    <option key={value} value={value}>
+                      {key} 
+                    </option>
+                  ))}
+              </select>
             </div>
             <div className="repair-field">
               <label htmlFor="description">Repair Description:</label>
               <textarea
-              className="border rounded-md h-8"
+                className="border rounded-md h-8 p-1 m-1"
                 id="description"
                 value={editedRepair.description}
                 onChange={(e) => handleChange("description", e.target.value)}
@@ -59,24 +66,27 @@ const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
             <div className="repair-field">
               <label htmlFor="currentStatus">Status:</label>
               <select
-                className="border rounded-md"
+                className="border rounded-md p-1 m-1"
                 id="currentStatus"
-                value={editedRepair.currentStatus}
-                onChange={(e) => handleChange("currentStatus", e.target.value)}
-                >
-                {Object.keys(RepairStatus).map((statusKey) => (
-                    <option key={statusKey} value={RepairStatus[statusKey]}>
-                    {statusKey}
+                value={editedRepair.type}
+                onChange={(e) => handleChange("type", parseInt(e.target.value))} // Make sure parsed integer onChange
+              >
+                {Object.entries(RepairStatus)
+                  .filter(([key, value]) => !isNaN(Number(value))) // Filter numeric values (reverse mapping handling)
+                  .map(([key, value]) => (
+                    <option key={value} value={value}>
+                      {key}
                     </option>
-                ))}
-                </select>
+                  ))}
+              </select>
+
             </div>
             <div className="repair-field">
               <label htmlFor="scheduledDate">Scheduled for:</label>
               <input
                 type="date"
                 id="scheduledDate"
-                className="border rounded-md"
+                className="border rounded-md p-1 m-1"
                 value={new Date(editedRepair.scheduledDate).toISOString().split('T')[0]}
                 onChange={(e) => handleChange("scheduledDate", e.target.value)}
               />
@@ -86,7 +96,7 @@ const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
               <input
                 type="number"
                 id="cost"
-                className="border rounded-md"
+                className="border rounded-md p-1 m-1"
                 value={editedRepair.cost}
                 onChange={(e) => handleChange("cost", e.target.value)}
               />

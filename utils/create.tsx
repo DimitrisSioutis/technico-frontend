@@ -8,6 +8,7 @@ export default async function createData(model: string, data: object) {
       body: JSON.stringify(data),
     });
 
+    console.log(JSON.stringify(data))
     const result = await response.json();
     return {
       status: response.status,

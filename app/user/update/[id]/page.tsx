@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { type User } from "@/app/types";
 import { useFormState } from "react-dom";
 import { register } from "@/app/actions/userController";
-import fetchData from "@/app/utils/fetch";
+import fetchData from "@/utils/fetch";
 import SignUpForm from "@/components/user/SignUpForm";
 
 // Refined FormState type

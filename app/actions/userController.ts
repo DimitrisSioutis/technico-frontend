@@ -1,5 +1,5 @@
-import createData from "../utils/create";
-import updateData from "../utils/update"; // Assume you have an update utility
+import createData from "../../utils/create";
+import updateData from "../../utils/update"; // Assume you have an update utility
 
 
 interface UserData {
@@ -36,6 +36,10 @@ export const register = async (prevState: FormState, formData: FormData): Promis
     if (!formData.get("surname")) errors.surname = "Surname is required";
     if (!formData.get("address")) errors.address = "Address is required";
 
+    const vatNumber = formData.get("vatNumber") as string;
+    if(vatNumber.length!=9){
+        errors.vatNumber = "VAT Number must be 10 characters"
+    }
     const phoneNumber = formData.get("phoneNumber") as string;
     if (!phoneNumber || phoneNumber.length < 10) {
         errors.phoneNumber = "Phone number must be at least 10 digits";
@@ -46,10 +50,8 @@ export const register = async (prevState: FormState, formData: FormData): Promis
         errors.email = "Email is required";
     }
 
-    // Check if it's an update or new registration
     const userId = formData.get("userId") as string | null;
 
-    // Password validation only for new registrations
     if (!userId) {
         const password = formData.get("password") as string;
         if (!password || password.length < 6) {
@@ -71,26 +73,35 @@ export const register = async (prevState: FormState, formData: FormData): Promis
         password: formData.get("password") as string,
     };
 
+    let response;
+
     if (userId) {
-        await updateData('User', userId, userData);
+        response = await updateData('User', userId, userData);
     } else {
-        const response = await  createData('User', userData);
-        if(response.status == 409){
-            if(response.data.message === 'User with this Email already exists'){
-                errors.email = response.data.message
-            }
+        response = await createData('User', userData);
+    }
 
-            if(response.data.message === 'User with this Vat already exists'){
-                errors.vatNumber = response.data.message
-            }
+    if (response.status === 409) {
+        const errors: FormState['errors'] = {};
+        const errorMessage = response.data.message;
+        console.log(response.data.message)
 
-            if(response.data.message === 'User with this VAT & Email already exists'){
-                errors.vatNumber = 'User with this VAT already exists'
-                errors.email = 'User with this Email already exists'
-            }
-
-            return { errors }
+        switch (errorMessage) {
+            case "User with this Email already exists":
+                errors.email = errorMessage;
+                break;
+            case 'User with this Vat already exists':
+                errors.vatNumber = errorMessage;
+                break;
+            case 'User with this VAT & Email already exists':
+                errors.vatNumber = 'User with this VAT already exists';
+                errors.email = 'User with this Email already exists';
+                break;
+            default:
+                console.log('Got the default error')
         }
+
+        return { errors };
     }
 
     return {

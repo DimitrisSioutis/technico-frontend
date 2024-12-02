@@ -8,10 +8,9 @@ interface PropertyViewProps {
   property: SimpleProperty
   onEdit: () => void
   onDelete: () => void
-  getUserData: ()=> void
 }
 
-const PropertyView: React.FC<PropertyViewProps> = ({ property, onEdit, onDelete , getUserData }) => {
+const PropertyView: React.FC<PropertyViewProps> = ({ property, onEdit, onDelete }) => {
   return (
     <>
       <Link href={`/property/${property.propertyId}`} className="block">
@@ -35,9 +34,7 @@ const PropertyView: React.FC<PropertyViewProps> = ({ property, onEdit, onDelete 
         </button>
         <button 
           onClick={() =>{
-            console.log('delete button clicked')
             onDelete()
-            getUserData();
           }}
           title="Delete property"
         >

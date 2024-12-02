@@ -10,7 +10,7 @@ import { Home, Wrench, Hammer } from "lucide-react";
 import PropertyRepairs from "@/components/repair/PropertyRepairs";
 import AddRepair from "@/components/repair/AddRepair";
 import { type Property } from "@/app/types";
-import fetchData from "@/app/utils/fetch";
+import fetchData from "@/utils/fetch";
 
 export default function Property() {
   const params = useParams();

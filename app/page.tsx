@@ -1,4 +1,4 @@
-import fetchAll from "./utils/fetchAll";
+import fetchAll from "../utils/fetchAll";
 import { type SimpleUser, type SimpleProperty, type RepairModel } from "./types";
 import { Users, Home, Wrench } from "lucide-react";
 import Logo from "@/components/navbar/Logo";

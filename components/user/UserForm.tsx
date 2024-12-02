@@ -2,8 +2,8 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { type UserFormErrors,  type UserFormData } from "@/app/types";
-import updateData from "@/app/utils/update";
-import createData from "@/app/utils/create";
+import updateData from "@/utils/update";
+import createData from "@/utils/create";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +51,7 @@ const UserForm: React.FC<UserFormProps> = ({ formData, setFormData, id }) => {
 
     if (validateForm()) {
       if (id) {
-        updateData(id, 'User', formData);
+        updateData(id,'User',formData);
       } else {
         createData('User', formData);
       }
