@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { type User } from "@/app/types";
 import { useFormState } from "react-dom";
-import { register } from "@/app/actions/userController";
+import { register } from "@/actions/userController";
 import fetchData from "@/utils/fetch";
 import SignUpForm from "@/components/user/SignUpForm";
 

@@ -1,6 +1,9 @@
-import createData from "../../utils/create";
-import updateData from "../../utils/update"; // Assume you have an update utility
-
+"use server"
+import createData from "../utils/create";
+import updateData from "../utils/update"; // Assume you have an update utility
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation"
+import axios from "axios";
 
 interface UserData {
     id?: string;
@@ -9,6 +12,11 @@ interface UserData {
     surname: string;
     address: string;
     phoneNumber: string;
+    email: string;
+    password?: string;
+}
+
+interface LoginData {
     email: string;
     password?: string;
 }
@@ -25,6 +33,16 @@ interface FormState {
         password?: string;
     };
     success?: boolean;
+    userId?: string;
+}
+
+interface LoginFormState {
+    errors?: {
+        email?: string;
+        password?: string;
+    };
+    success?: boolean;
+    userId?: string;
 }
 
 export const register = async (prevState: FormState, formData: FormData): Promise<FormState> => {
@@ -105,6 +123,62 @@ export const register = async (prevState: FormState, formData: FormData): Promis
     }
 
     return {
-        success: true
+        success: true,
+        userId: response.data.id
     }
 };
+
+export const login = async function (prevState, formData) {
+  const failObject = {
+    success: false,
+    message: "Invalid email / password."
+  }
+
+  // Create user object from form data
+  const ourUser = {
+    email: formData.get("email"),
+    password: formData.get("password")
+  }
+
+  // Basic type checks for email and password
+  if (typeof ourUser.email !== "string") ourUser.email = "";
+  if (typeof ourUser.password !== "string") ourUser.password = "";
+
+  try {
+    // Sending login request to API
+    const response = await axios.post(
+      "https://localhost:7166/api/User/login",
+      ourUser,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, 
+      }
+    );
+
+    if (response.status === 200) {
+      const token = response.data.token;
+
+      cookies().set('token', token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24,  // 1 day in seconds
+        secure: true, // Set to true in production for HTTPS requests
+      });
+
+      redirect("/dashboard");
+    } else {
+      return failObject;
+    }
+
+  } catch (error) {
+    console.error("Login error:", error);
+    return failObject;
+  }
+};
+
+export const logout = async function () {
+  cookies().delete('token');
+  redirect("/");
+}

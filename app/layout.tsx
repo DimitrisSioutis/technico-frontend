@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import { Red_Hat_Display } from 'next/font/google';
+import { AuthProvider } from '@/components/AuthContext';
 
 const redhat= Red_Hat_Display({
   subsets: ['latin'], 
@@ -20,12 +21,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+       {/* <AuthProvider> */}
       <body
         className={redhat.className}
       >
         <Navbar/>
         {children}
       </body>
+      {/* </AuthProvider> */}
     </html>
   );
 }

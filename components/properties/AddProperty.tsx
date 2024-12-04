@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { PropertyData, FormErrors } from "@/app/types";
 import createData from "@/utils/create";
-import { useUserContext } from "../user/UserContext";
+import { useUserContext } from "../UserContext";
 
 export default function AddProperty() {
   const { user, setActiveTab, refetch } = useUserContext();

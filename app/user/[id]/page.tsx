@@ -1,7 +1,7 @@
 "use client"
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "next/navigation";
-import { UserProvider, useUserContext } from "@/components/user/UserContext";
+import { UserProvider, useUserContext } from "@/components/UserContext";
 import UserLoadingSkeleton from "@/components/skeletons/UserSkeleton";
 import UserProperties from "@/components/properties/UserProperties";
 import AddProperty from "@/components/properties/AddProperty";
@@ -9,13 +9,14 @@ import AddProperty from "@/components/properties/AddProperty";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User as UserIcon, Mail, Home, Plus } from "lucide-react";
+import { useAuth } from '@/components/AuthContext';
 
 function UserPageContent() {
 
-  const { user, loading, error, activeTab, setActiveTab } = useUserContext();
-
-  if (loading) return <UserLoadingSkeleton />;
-  if (error) return <span>Error: {error}</span>;
+  const { user } = useAuth();
+  // const { user, loading, error, activeTab, setActiveTab } = useUserContext();
+  // if (loading) return <UserLoadingSkeleton />;
+  // if (error) return <span>Error: {error}</span>;
 
   return (
     <div className="grid gap-6 w-1/2 m-auto">
@@ -73,11 +74,10 @@ function UserPageContent() {
 }
 
 export default function UserPage() {
-  const params = useParams();
-  const userId = Array.isArray(params.id) ? params.id[0] : params.id;
-
+  // const params = useParams();
+  // const userId = Array.isArray(params.id) ? params.id[0] : params.id;
   return (
-    <UserProvider userId={userId}>
+    <UserProvider>
       <UserPageContent />
     </UserProvider>
   );

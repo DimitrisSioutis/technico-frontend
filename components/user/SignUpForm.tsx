@@ -23,16 +23,14 @@ interface SignUpFormProps {
 const SignUpForm: React.FC<SignUpFormProps> = ({ formAction, formState, isUpdate = false,userId }) => {
   const router = useRouter();
 
-  // useEffect(()=>{
-  //   if(formState.errors == undefined){
-  //     router.push('/user')
-  //   }
-  // },[formState])
+  useEffect(()=>{
+    if(formState.success){
+      router.push(`user/${formState.userId}`)
+    }
+  },[formState])
 
-  console.log(formState)
   return (
     <form action={formAction} className="space-y-4">
-      {/* Hidden input for user ID in update scenario */}
       {isUpdate && userId && (
         <input 
           type="hidden" 

@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import { useFormState } from "react-dom"; // Replace with the actual import path
-import { register } from "../actions/userController"; // Ensure this action matches the expected signature
+import React, { useEffect } from "react";
+import { useFormState } from "react-dom"; 
+import { register } from "../../actions/userController"; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import SignUpForm from "@/components/user/SignUpForm";
 

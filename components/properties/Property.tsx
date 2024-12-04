@@ -4,7 +4,7 @@ import PropertyEdit from './PropertyEdit'
 import { type SimpleProperty } from '@/app/types'
 import updateData from '@/utils/update'
 import deleteData from '@/utils/delete'
-import { useUserContext } from '../user/UserContext'
+import { useUserContext } from '../UserContext'
 
 interface PropertyProps {
   property: SimpleProperty;

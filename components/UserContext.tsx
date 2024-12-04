@@ -14,12 +14,9 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider: React.FC<{ userId: string; children: ReactNode }> = ({
-  userId,
-  children,
-}) => {
+export const UserProvider: React.FC<{children: ReactNode }> = ({children,}) => {
   const [activeTab, setActiveTab] = useState<string>("properties");
-  const { data: user, loading, error, refetch } = useFetch(userId, "User");
+  const { data: user, loading, error, refetch } = useFetch();
 
   useEffect(() => {
     refetch();
