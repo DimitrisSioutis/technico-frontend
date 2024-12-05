@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value; 
 
   const protectedRoutes = ['/dashboard'];
-  const publicRoutes = ['/login','/login2'];
+  const publicRoutes = ['/login','/login'];
 
   if (protectedRoutes.includes(request.nextUrl.pathname)) {
     if (!token) {

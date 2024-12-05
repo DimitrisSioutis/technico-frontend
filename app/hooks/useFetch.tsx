@@ -1,6 +1,7 @@
+import fetchData from '@/utils/fetch';
 import { useState, useEffect, useCallback } from 'react';
 
-function useFetch<T>() {
+function useFetch<T>(id,model) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -9,13 +10,9 @@ function useFetch<T>() {
     try{
       setLoading(true);
       setError(null);
-      const localUser = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
-      console.log(localUser)
-      console.log(token)
-      const user = JSON.parse(localUser);
-      setData(user);
-
+      const response = await fetchData(id,model)
+      console.log(response)
+      setData(response.json());
       return user;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);

@@ -21,7 +21,7 @@ const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
 
   const handleSaveEdit = async () => {
     setIsEditing(false);
-    await updateData(repair.id, 'Repair', editedRepair);
+    await updateData('Repair',repair.id,  editedRepair);
     onRepairUpdated(); 
   };
   

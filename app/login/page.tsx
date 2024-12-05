@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
+import { logout } from "@/actions/userController";
 
 export default function Page() {
   const [formState, formAction] = useFormState(login, {})
@@ -20,26 +21,28 @@ export default function Page() {
         </CardHeader>
         <CardContent>
         <form action={formAction}>
-            <div>
+            <div className="py-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
+                className="py-2"
               />
             </div>
-            <div>
+            <div className="py-2">
               <Input
                 id="password"
                 name="password"
                 type="password"
+                className="py-2"
               />
             </div>
 
-            <span>{formState.message}</span>
+            <span >{formState.message}</span>
 
-            <CardFooter>
-              <Button type="submit" className="w-full">
+            <CardFooter className="mt-8">
+              <Button type="submit" className="w-full ">
                 Login
               </Button>
             </CardFooter>

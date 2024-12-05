@@ -1,47 +1,33 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from "react";
-import useFetch from "@/app/hooks/useFetch";
-import { User } from "@/app/types";
+"use client"
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import fetchData from '@/utils/fetch';
 
-// Define the context type
-interface UserContextType {
-  user: User;
-  loading: boolean;
-  error: string | null;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  refetchUser: () => void; // Expose refetchUser function
-}
+const UserContext = createContext();
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+export const useUser = () => useContext(UserContext);
 
-export const UserProvider: React.FC<{children: ReactNode }> = ({children,}) => {
-  const [activeTab, setActiveTab] = useState<string>("properties");
-  const { data: user, loading, error, refetch } = useFetch();
+export const UserProvider = ({ children, userId }) => {
+  const [user, setUser] = useState();
+  const refetchUser = async () => {
+    try {
+      if (userId) {
+        const data = await fetchData(userId, "User");
+        setUser(data)
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   useEffect(() => {
-    refetch();
-  }, [refetch]); 
+    if (userId) {
+      refetchUser();  // Fetch user data when userId is available
+    }
+  }, [userId,user]);  // Trigger whenever userId changes
 
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        activeTab,
-        setActiveTab,
-        refetch, // Provide the refetchUser function
-      }}
-    >
+    <UserContext.Provider value={{ user, refetchUser }}>
       {children}
     </UserContext.Provider>
   );
-};
-
-export const useUserContext = () => {
-  const context = useContext(UserContext);
-  if (context === undefined) {
-    throw new Error("useUserContext must be used within a UserProvider");
-  }
-  return context;
 };

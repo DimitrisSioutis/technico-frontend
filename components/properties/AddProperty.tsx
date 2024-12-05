@@ -5,16 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { PropertyData, FormErrors } from "@/app/types";
 import createData from "@/utils/create";
-import { useUserContext } from "../UserContext";
 
-export default function AddProperty() {
-  const { user, setActiveTab, refetch } = useUserContext();
-  const userId = user?.id;
-
+export default function AddProperty({id}) {
   const [formData, setFormData] = useState<PropertyData>({
     address: "",
     yearOfConstruction: 0,
-    ownerID: userId,
+    ownerID: id,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -45,8 +41,6 @@ export default function AddProperty() {
         return;
       }
 
-      setActiveTab("properties");
-      refetch(); 
     }
   };
 

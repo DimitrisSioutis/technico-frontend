@@ -1,13 +1,14 @@
 import { getUserCookie } from "@/lib/getUserCookie";
-import fetchData from "@/utils/fetch";
 import UserProfile from "@/components/user/UserProfile";
+import { UserProvider } from "@/components/UserContext";
 
 export default async function Dashboard() {
   const cookie = getUserCookie();
-  const userId = cookie?.userId;  
-  const user = await fetchData(userId,"User")
+  const userId = cookie?.userId; 
 
   return (
-    <UserProfile user={user}/>
+    <UserProvider userId={userId}>
+      <UserProfile/>
+    </UserProvider>
   );
 }

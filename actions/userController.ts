@@ -36,14 +36,6 @@ interface FormState {
     userId?: string;
 }
 
-interface LoginFormState {
-    errors?: {
-        email?: string;
-        password?: string;
-    };
-    success?: boolean;
-    userId?: string;
-}
 
 export const register = async (prevState: FormState, formData: FormData): Promise<FormState> => {
     const errors: FormState['errors'] = {};
@@ -134,18 +126,19 @@ export const login = async function (prevState, formData) {
     message: "Invalid email / password."
   }
 
-  // Create user object from form data
   const ourUser = {
     email: formData.get("email"),
     password: formData.get("password")
   }
 
-  // Basic type checks for email and password
-  if (typeof ourUser.email !== "string") ourUser.email = "";
-  if (typeof ourUser.password !== "string") ourUser.password = "";
+  if (!ourUser.email || !ourUser.password) {
+    return {
+      success: false,
+      message: "Email and password are required."
+    };
+  }
 
   try {
-    // Sending login request to API
     const response = await axios.post(
       "https://localhost:7166/api/User/login",
       ourUser,
@@ -160,23 +153,40 @@ export const login = async function (prevState, formData) {
     if (response.status === 200) {
       const token = response.data.token;
 
+      if (!token) {
+        console.error("No token received");
+        return {
+          success: false,
+          message: "Authentication failed: No token received"
+        };
+      }
+
+      // Set cookie (ensure this is set for the client-side)
       cookies().set('token', token, {
         httpOnly: true,
         sameSite: "strict",
-        maxAge: 60 * 60 * 24,  // 1 day in seconds
-        secure: true, // Set to true in production for HTTPS requests
+        maxAge: 60 * 60 * 24,
+        secure: process.env.NODE_ENV === 'production', // Secure in production only
       });
 
-      redirect("/dashboard");
+       
     } else {
+      console.error("Unexpected response status:", response.status);
       return failObject;
     }
 
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
     return failObject;
+  } finally{
+    redirect("/dashboard"); 
   }
 };
+
 
 export const logout = async function () {
   cookies().delete('token');

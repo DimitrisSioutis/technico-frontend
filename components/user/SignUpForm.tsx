@@ -25,7 +25,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ formAction, formState, isUpdate
 
   useEffect(()=>{
     if(formState.success){
-      router.push(`user/${formState.userId}`)
+      router.push(`/login`)
     }
   },[formState])
 
