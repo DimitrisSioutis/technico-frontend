@@ -4,7 +4,7 @@ import { useFormState } from 'react-dom'
 import { Check, X } from 'lucide-react'
 import { SimpleProperty } from '@/app/types'
 import { createProperty } from '@/actions/propertyController'
-import { useUser } from '@/components/UserContext'
+import { useUser } from '@/components/context/UserContext'
 
 interface PropertyEditProps {
   editedProperty: SimpleProperty
@@ -21,7 +21,6 @@ const PropertyEdit: React.FC<PropertyEditProps> = ({
 }) => {
   const [formState, formAction] = useFormState(createProperty, {})
   const formRef = useRef<HTMLFormElement>(null)
-  const {refetchUser} = useUser();
 
   const handleSave = async (e: React.MouseEvent) => {
     e.preventDefault();

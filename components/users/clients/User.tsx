@@ -2,12 +2,6 @@
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User as UserIcon, Mail, Home, Plus} from "lucide-react";
-import UserProperties from "@/components/properties/UserProperties";
-import PropertyForm from '../properties/PropertyForm';
-import { useFormState } from 'react-dom';
-import { logout } from '@/actions/userController';
-import { LogOut } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,10 +13,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { User as UserIcon, Mail, Home, Plus,LogOut } from "lucide-react";
+import UserProperties from "@/components/properties/UserProperties";
+import PropertyForm from '@/components/properties/PropertyForm';
+import { useFormState } from 'react-dom';
+import { logout } from '@/actions/userController';
+
+
 
 const User = ({user}) => {
 
   const [formState, formAction] = useFormState(logout, {})
+
   return (
     <div className="grid gap-6 w-1/2 m-auto">
   <Card className="shadow-lg">
@@ -88,7 +90,7 @@ const User = ({user}) => {
           <CardContent className="pt-6">
             <div className="flex items-center mb-4">
               <Plus className="h-5 w-5 mr-2 text-primary" />
-              <h3 className="text-lg font-semibold">Add New Property</h3>
+              <h3 className="text-lg font-semibold">Repairs</h3>
             </div>
             <PropertyForm userId={user.id}/>
           </CardContent>

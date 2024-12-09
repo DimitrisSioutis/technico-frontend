@@ -8,8 +8,9 @@ export const getUserCookie = () => {
             const secretKey = "NAWHFWIZ7JjQeBvAMe27GWvatNqkKwRG";
             const decoded = jwt.verify(cookie, secretKey);
             const userId = decoded.sub;
+            const userEmail = decoded.jti;
             
-            return { userId, decoded }; 
+            return { userId, userEmail }; 
         } catch (error) {
             console.error('Token verification error:', error);
             return null;

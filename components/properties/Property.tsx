@@ -27,13 +27,7 @@ const Property: React.FC<PropertyProps> = ({ property }) => {
     }));
   };
 
-  const handleDelete = async () => {
-    try {
-      await deleteData('Property', property.propertyId);
-    } catch (error) {
-      console.error('Error deleting property:', error);
-    }
-  };
+
 
   return (
     <li
@@ -51,7 +45,6 @@ const Property: React.FC<PropertyProps> = ({ property }) => {
         <PropertyView 
           property={property} 
           onEdit={handleEdit}
-          onDelete={handleDelete}
         />
       )}
     </li>

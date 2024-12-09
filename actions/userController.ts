@@ -4,6 +4,7 @@ import updateData from "../utils/update"; // Assume you have an update utility
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation"
 import axios from "axios";
+import { revalidatePath } from "next/cache";
 
 interface UserData {
     id?: string;
@@ -111,7 +112,7 @@ export const register = async (prevState: FormState, formData: FormData): Promis
                 console.log('Got the default error')
         }
 
-        return { errors };
+        return { errors , response};
     }
 
     return {

@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useFormState } from "react-dom"; 
 import { register } from "../../actions/userController"; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import SignUpForm from "@/components/user/SignUpForm";
+import SignUpForm from "@/components/users/clients/SignUpForm";
 
 const SignUp = () => {
 

@@ -4,20 +4,40 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value; 
 
-  const protectedRoutes = ['/dashboard'];
-  const publicRoutes = ['/login','/login'];
+  const protectedRoutes = [
+    '/dashboard',          
+    '/dashboard/property', 
+    '/dashboard/property/', 
+    '/dashboard/property/*' 
+  ];
 
-  if (protectedRoutes.includes(request.nextUrl.pathname)) {
+  const publicRoutes = ['/login'];
+
+  const isProtectedRoute = protectedRoutes.some(route => 
+    request.nextUrl.pathname === route || 
+    request.nextUrl.pathname.startsWith(route.replace('*', ''))
+  );
+
+  if (isProtectedRoute) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
-  if (publicRoutes.includes(request.nextUrl.pathname)) {
+  const uniquePublicRoutes = [...new Set(publicRoutes)];
+
+  if (uniquePublicRoutes.includes(request.nextUrl.pathname)) {
     if (token) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }
 
   return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/login'
+  ]
 }

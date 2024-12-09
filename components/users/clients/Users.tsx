@@ -1,6 +1,6 @@
 import React from 'react';
 import { type SimpleUser } from '@/app/types';
-import RUDoptions from '../RUDoptions';
+import RUDoptions from '@/components/RUDoptions';
 
 interface UserProps {
   users: SimpleUser[];

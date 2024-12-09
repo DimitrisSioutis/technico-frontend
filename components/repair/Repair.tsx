@@ -9,7 +9,7 @@ interface RepairProps {
   onRepairUpdated: ()=>void;
 }
 
-const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
+const Repair: React.FC<RepairProps> = ({ repair}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedRepair, setEditedRepair] = useState(repair);
 
@@ -22,7 +22,6 @@ const Repair: React.FC<RepairProps> = ({ repair,onRepairUpdated}) => {
   const handleSaveEdit = async () => {
     setIsEditing(false);
     await updateData('Repair',repair.id,  editedRepair);
-    onRepairUpdated(); 
   };
   
   const handleChange = (field: keyof RepairModel, value: any) => {

@@ -35,12 +35,15 @@ export default function AddProperty({id}) {
     e.preventDefault();
 
     if (validateForm()) {
-      const response = await createData("Property", formData);
-      if (response.status === 409) {
-        setError(response.data.message);
-        return;
+      try{
+        const response = await createData("Property", formData);
+        if (response.status === 409) {
+          setError(response.data.message);
+          return;
+        }
+      }catch(e){
+        console.error(e)
       }
-
     }
   };
 

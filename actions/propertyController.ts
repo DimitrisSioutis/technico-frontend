@@ -1,12 +1,14 @@
-// propertyController.ts
+"use server"
 import createData from "@/utils/create";
+import deleteData from "@/utils/delete";
 import updateData from "@/utils/update";  // Make sure to import updateData
+import { revalidatePath } from "next/cache";
 
 interface PropertyData {
     address: FormDataEntryValue | null;
-    yearOfConstruction: number | null;  // Change the type to number | null
+    yearOfConstruction: number | null;  
     ownerID: string | null;
-    propertyId?: string;  // Optional propertyId
+    propertyId?: string;  
 }
 
 export const createProperty = async (prevState: FormState, formData: FormData): Promise<FormState> => {
@@ -24,7 +26,6 @@ export const createProperty = async (prevState: FormState, formData: FormData): 
         return { errors };
     }
 
-    // Validate year of construction is a valid number
     const constructionYear = yearOfConstruction ? parseInt(yearOfConstruction as string) : null;
     
     if (constructionYear && isNaN(constructionYear)) {
@@ -52,8 +53,6 @@ export const createProperty = async (prevState: FormState, formData: FormData): 
             response = await createData('Property', propertyData);
         }
 
-        console.log(response)
-
         return {
             success: true,
         };
@@ -64,5 +63,37 @@ export const createProperty = async (prevState: FormState, formData: FormData): 
                 submit: "Failed to save property. Please try again."
             }
         };
+    }finally{
+        revalidatePath('/dashboard')
     }
 };
+
+
+export const deleteProperty = async (
+  prevState: { 
+    success?: boolean; 
+    message?: string; 
+    propertyId?: string 
+  }, 
+  formData: FormData
+) => {
+  const propertyId = formData.get('propertyId') as string;
+
+  try {
+    await deleteData("Property", propertyId);
+    
+    revalidatePath("/dashboard");
+
+    return { 
+      success: true, 
+      message: "Property deleted successfully",
+      propertyId 
+    };
+  } catch(e) {
+    return { 
+      success: false, 
+      message: e instanceof Error ? e.message : "An error occurred during property deletion",
+      propertyId 
+    };
+  }
+}
