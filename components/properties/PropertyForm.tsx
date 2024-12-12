@@ -1,14 +1,24 @@
 "use client"
-
+import React,{useEffect} from 'react';
 import { useFormState } from "react-dom"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {Plus} from 'lucide-react';
 import { createProperty } from "@/actions/propertyController";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Page({userId}) {
+  const { toast } = useToast();
   const [formState, formAction] = useFormState(createProperty, {})
+
+  useEffect(()=>{
+    if(formState.success){
+        toast({
+          title: "Property Added Succesfully"
+        });
+    }
+},[formState.success,toast])
 
   return (
         <form action={formAction}>

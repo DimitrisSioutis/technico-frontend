@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableRow,
-  TableHead,
-} from "@/components/ui/table";
-
 import fetchAll from "@/utils/fetchAll";
 import OwnerForm from "./OwnerForm";
-import Owner from "./Owner";
+import OwnersCard from "@/components/users/admins/OwnersCard";
 import updateData from "@/utils/update";
 import createData from "@/utils/create";
 
@@ -34,6 +23,7 @@ const Owners: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingOwner, setEditingOwner] = useState<OwnerType | null>(null);
+  const [maxPage, setMaxPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchOwners = async () => {
@@ -53,13 +43,16 @@ const Owners: React.FC = () => {
     fetchOwners();
   }, []);
 
-  const filteredOwners = owners.filter(
-    (owner) =>
-      owner.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      owner.surname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      owner.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      owner.vatNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const max = Math.ceil(owners.filter(
+      (owner) =>
+        owner.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        owner.surname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        owner.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        owner.vatNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+    ).length / 5) + 1;
+    setMaxPage(max);
+  }, [searchTerm, owners]);
 
   const handleEdit = (owner: OwnerType) => {
     setEditingOwner(owner);
@@ -91,6 +84,8 @@ const Owners: React.FC = () => {
     );
   };
 
+
+
   return (
     <div className="container mx-auto p-4">
       {showForm ? (
@@ -103,54 +98,15 @@ const Owners: React.FC = () => {
           }}
         />
       ) : (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between mb-4">
-              <CardTitle>Owner List</CardTitle>
-              <div className="flex items-center space-x-4">
-                <Input
-                  placeholder="Search owners..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full max-w-md"
-                />
-                <Button
-                  onClick={() => {
-                    setShowForm(true);
-                    setEditingOwner(null);
-                  }}
-                >
-                  Add Owner
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Surname</TableHead>
-                  <TableHead>Properties</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOwners.map((owner) => (
-                  <Owner
-                    owner={owner}
-                    key={owner.id}
-                    onEdit={handleEdit}
-                    onDelete={() => handleDeleteOwner(owner.id!)}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-            {filteredOwners.length === 0 && (
-              <p className="text-center text-gray-500 mt-4">No owners found</p>
-            )}
-          </CardContent>
-        </Card>
+        <OwnersCard
+          owners={owners}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          setShowForm={setShowForm}
+          setEditingOwner={setEditingOwner}
+          handleEdit={handleEdit}
+          handleDeleteOwner={handleDeleteOwner}
+        />
       )}
     </div>
   );

@@ -25,7 +25,11 @@ export default async function updateData(model: string, id: string, payload: any
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    return {
+      status: response.status,
+      data: result,
+    };
   } catch (error) {
     console.error('Update Data Error:', error);
     throw error;

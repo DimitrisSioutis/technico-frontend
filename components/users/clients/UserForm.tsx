@@ -8,30 +8,31 @@ import { type User } from "@/app/types";
 
 // Define types for the props
 interface FormState {
-  errors?: Record<string, string>; // Error messages for each field
-  values?: Partial<User>; // Current values of the form fields
-  success?: boolean;  // Add this line
+  errors?: Record<string, string>; 
+  values?: Partial<User>; 
+  success?: boolean;
 }
 
 interface SignUpFormProps {
   formAction: (formData: FormData) => void;
   formState: FormState;
-  isUpdate?: boolean;
   userId?: string;
 }
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ formAction, formState, isUpdate = false,userId }) => {
+const UserForm: React.FC<SignUpFormProps> = ({ formAction, formState, userId }) => {
   const router = useRouter();
 
   useEffect(()=>{
+    console.warn('DATA: ',formState)
     if(formState.success){
-      router.push(`/login`)
+      
+      router.push('/dashboard')
     }
   },[formState])
 
   return (
     <form action={formAction} className="space-y-4">
-      {isUpdate && userId && (
+      {userId && (
         <input 
           type="hidden" 
           name="userId" 
@@ -114,7 +115,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ formAction, formState, isUpdate
       </div>
       
 
-        <div>
+        {userId==undefined && (<div>
           <Label htmlFor="password">Password</Label>
           {formState.errors?.password && (
             <span className="pl-4 text-red-500 text-sm">{formState.errors.password}</span>
@@ -126,15 +127,15 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ formAction, formState, isUpdate
             defaultValue={formState.values?.password || ""}
             required
           />
-        </div>
+        </div>)}
 
       <CardFooter>
         <Button type="submit" className="w-full">
-          {isUpdate ? "Update Profile" : "Sign Up"}
+          {userId ? "Update Profile" : "Sign Up"}
         </Button>
       </CardFooter>
     </form>
   );
 };
 
-export default SignUpForm;
+export default UserForm;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import { Red_Hat_Display } from 'next/font/google';
+import { Toaster } from "@/components/ui/toaster";
 
 const redhat= Red_Hat_Display({
   subsets: ['latin'], 
@@ -25,6 +26,7 @@ export default function RootLayout({
       >
         <Navbar/>
         {children}
+        <Toaster />
       </body>
     </html>
   );

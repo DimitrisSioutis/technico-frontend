@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React,{useEffect} from "react";
 import { useFormState} from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus } from "lucide-react";
 import { RepairType } from "@/app/types";
 import { postRepair } from "@/actions/repairController";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AddRepair({ propertyId, propertyAddress}) {
+    const { toast } = useToast();
     const [formState, formAction] = useFormState(postRepair, {})
+
+    useEffect(()=>{
+        if(formState.success){
+            console.log('success')
+            toast({
+              title: "Repair Added",
+              description: "Repair Added",
+            })
+        }
+    },[formState.success,toast])
+
 
     return (
         <form action={formAction} className="space-y-4 w-2/3 mx-auto">

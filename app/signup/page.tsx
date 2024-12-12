@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useFormState } from "react-dom"; 
-import { register } from "../../actions/userController"; 
+import { postUser } from "../../actions/userController"; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import SignUpForm from "@/components/users/clients/SignUpForm";
+import UserForm from "@/components/users/clients/UserForm";
 
 const SignUp = () => {
 
   const initialState = { errors: {}, success: undefined };
-  const [formState, formAction] = useFormState(register, initialState);
+  const [formState, formAction] = useFormState(postUser, initialState);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -18,7 +18,7 @@ const SignUp = () => {
           <CardTitle>Sign Up</CardTitle>
         </CardHeader>
         <CardContent>
-          <SignUpForm formAction={formAction} formState={formState} />
+          <UserForm formAction={formAction} formState={formState} />
         </CardContent>
       </Card>
     </div>

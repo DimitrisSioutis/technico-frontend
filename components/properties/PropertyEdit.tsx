@@ -4,7 +4,6 @@ import { useFormState } from 'react-dom'
 import { Check, X } from 'lucide-react'
 import { SimpleProperty } from '@/app/types'
 import { createProperty } from '@/actions/propertyController'
-import { useUser } from '@/components/context/UserContext'
 
 interface PropertyEditProps {
   editedProperty: SimpleProperty

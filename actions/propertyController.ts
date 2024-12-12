@@ -1,7 +1,7 @@
 "use server"
 import createData from "@/utils/create";
 import deleteData from "@/utils/delete";
-import updateData from "@/utils/update";  // Make sure to import updateData
+import updateData from "@/utils/update"; 
 import { revalidatePath } from "next/cache";
 
 interface PropertyData {
@@ -11,7 +11,7 @@ interface PropertyData {
     propertyId?: string;  
 }
 
-export const createProperty = async (prevState: FormState, formData: FormData): Promise<FormState> => {
+export async function createProperty(prevState: FormState, formData: FormData): Promise<FormState>{
     const errors: FormState['errors'] = {};
 
     if (!formData.get("address")) errors.address = "Address is required";
@@ -40,31 +40,38 @@ export const createProperty = async (prevState: FormState, formData: FormData): 
     };
 
     try {
-        let response;
-        if (propertyId) {
-            const updatePropertyData: PropertyData = {
-                propertyId: propertyId,
-                address: address,
-                yearOfConstruction: constructionYear,
-                ownerID: userId
+      let response;
+      if (propertyId) {
+          const updatePropertyData: PropertyData = {
+              propertyId: propertyId,
+              address: address,
+              yearOfConstruction: constructionYear,
+              ownerID: userId
+          };
+          response = await updateData('Property', propertyId, updatePropertyData);
+          if(response.status == 201) 
+            revalidatePath('/dashboard');
+            return {
+                success: true,
             };
-            response = await updateData('Property', propertyId, updatePropertyData);
-        } else {
-            response = await createData('Property', propertyData);
-        }
 
-        return {
-            success: true,
-        };
+      } else {
+          response = await createData('Property', propertyData);
+          console.log(response.status)
+          if(response.status == 201) 
+              revalidatePath('/dashboard');
+              return {
+                  success: true,
+              };
+      }
+
     } catch (error) {
         console.error("Property operation error:", error);
         return {
             errors: {
-                submit: "Failed to save property. Please try again."
+                submit: error
             }
         };
-    }finally{
-        revalidatePath('/dashboard')
     }
 };
 

@@ -12,7 +12,6 @@ const Property: React.FC<PropertyProps> = ({ property }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProperty, setEditedProperty] = useState(property);
 
-
   const handleEdit = () => setIsEditing(true);
   
   const handleCancelEdit = () => {

@@ -1,8 +1,9 @@
 "use server"
 import createData from "@/utils/create";
 import deleteData from "@/utils/delete";
-import updateData from "@/utils/update";
+import updateData from "@/utils/update"; 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 enum RepairType {
   Other = 0,
@@ -11,10 +12,9 @@ enum RepairType {
   Structural = 3,
 }
 
-export const postRepair = async (prevState: FormState, formData: FormData): Promise<FormState> => {
+export async function postRepair(prevState: FormState, formData: FormData): Promise<FormState>{
   const errors: FormState['errors'] = {};
 
-  // Validation checks
   if (!formData.get("scheduledDate")) errors.scheduledDate = "Scheduled Date is required";
   if (!formData.get("type")) errors.type = "Repair Type is required";
   if (!formData.get("description")) errors.description = "Description is required";
@@ -25,17 +25,8 @@ export const postRepair = async (prevState: FormState, formData: FormData): Prom
   const description = formData.get("description");
   const cost = formData.get("cost");
   const propertyId = formData.get("propertyId") as string | null;
-  const repairId = formData.get("repairId") as string | null;
+  const id = formData.get("id") as string | null;
   const propertyAddress = formData.get("propertyAddress") as string;
-  
-  console.log("Form Data Values:");
-  console.log("scheduledDate:", scheduledDate);
-  console.log("type:", type);
-  console.log("description:", description);
-  console.log("cost:", cost);
-  console.log("propertyId:", propertyId);
-  console.log("repairId:", repairId);
-  console.log("propertyAddress:", propertyAddress);
   
   if (scheduledDate) {
     const parsedDate = new Date(scheduledDate as string);
@@ -58,74 +49,71 @@ export const postRepair = async (prevState: FormState, formData: FormData): Prom
     return { errors };
   }
 
-  // const repairData: RepairData = {
-  //   scheduledDate: scheduledDate ? new Date(scheduledDate as string).toISOString() : null,
-  //   type: parsedType as RepairType,
-  //   description: description as string,
-  //   cost: parsedCost,
-  //   propertyId: propertyId,
-  //   address: propertyAddress,
-  // };
+  const repairData: RepairData = {
+    scheduledDate: scheduledDate ? new Date(scheduledDate as string).toISOString() : null,
+    type: parsedType as RepairType,
+    description: description as string,
+    cost: parsedCost,
+    propertyId: propertyId,
+    address: propertyAddress,
+  };
   
-
-  // try {
-  //   let response;
-  //   console.log("Repair Operation:", repairId ? "Update" : "Create");
-  //   console.log("Repair Data:", JSON.stringify(repairData, null, 2));
-
-    // if (repairId) {
-    //   // Ensure a new object is created to avoid property redefinition
-    //   const updateRepairData = {
-    //     ...repairData,
-    //     repairId: repairId
-    //   };
-    //   response = await updateData('Repair', repairId, updateRepairData);
-    // }
+  try {
+    let response;
+    if (id) {
+      console.log(id)
+      const updateRepairData = {
+        ...repairData,
+        id: id
+      };
+      response = await updateData('Repair', id, updateRepairData);
+      if(response.status == 201 || response.status == 200) 
+          console.log(response.status)
+          revalidatePath('/dashboard');
+    }else{
+      response = await createData('Repair', repairData);
+      if(response.status == 201 || response.status == 200)  
+          revalidatePath('/dashboard');
+    }
     
-    //response = await createData('Repair', repairData);
-    //revalidatePath(`/dashboard/property/${propertyId}`);
-
-  //   return {
-  //     success: true,
-  //   };
-  // } catch (error) {
-  //   console.error("Repair operation error:", error);
-  //   return {
-  //     errors: {
-  //       submit: error instanceof Error 
-  //         ? `Failed to save repair: ${error.message}` 
-  //         : "Failed to save repair. Please try again."
-  //     }
-  //   };
-  // }
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Repair operation error:", error);
+    return {
+      errors: {
+        submit: error instanceof Error 
+          ? `Failed to save repair: ${error.message}` 
+          : "Failed to save repair. Please try again."
+      }
+    };
+  }
 };
 
-export const deleteRepair = async (
+export async function deleteRepair(
   prevState: { 
     success?: boolean; 
     message?: string; 
-    repairId?: string 
+    id?: string 
   }, 
   formData: FormData
-) => {
-  const repairId = formData.get('repairId') as string;
-
+){
+  const id = formData.get('id') as string;
   try {
-    await deleteData("Repair", repairId);
-    
+    await deleteData("Repair", id);
     revalidatePath("/dashboard");
-
     return { 
       success: true, 
       message: "Repair deleted successfully",
-      repairId 
+      id 
     };
   } catch(error) {
     console.error("Delete repair error:", error);
     return { 
       success: false, 
       message: error instanceof Error ? error.message : "An error occurred during repair deletion",
-      repairId 
+      id 
     };
   }
 };
