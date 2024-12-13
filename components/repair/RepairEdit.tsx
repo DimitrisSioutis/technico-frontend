@@ -4,7 +4,7 @@ import { postRepair } from "@/actions/repairController";
 import { Check } from "lucide-react";
 import { RepairType, RepairStatus } from "@/app/types";
 import { Input } from "@/components/ui/input";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
 const RepairEdit = ({ repair, onSave, onCancel }) => {
@@ -44,12 +44,6 @@ const RepairEdit = ({ repair, onSave, onCancel }) => {
     formRef.current?.requestSubmit();
     onSave();
   };
-
-  if(formState.success){
-    toast({
-      title: "Repair Edited",
-    })
-  }
 
   return (
     <form ref={formRef} action={formAction}>

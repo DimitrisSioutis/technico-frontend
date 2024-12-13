@@ -3,7 +3,6 @@ import createData from "@/utils/create";
 import deleteData from "@/utils/delete";
 import updateData from "@/utils/update"; 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 enum RepairType {
   Other = 0,
@@ -67,14 +66,13 @@ export async function postRepair(prevState: FormState, formData: FormData): Prom
         id: id
       };
       response = await updateData('Repair', id, updateRepairData);
-      if(response.status == 201 || response.status == 200) 
-          console.log(response.status)
-          revalidatePath('/dashboard');
     }else{
       response = await createData('Repair', repairData);
-      if(response.status == 201 || response.status == 200)  
-          revalidatePath('/dashboard');
+
     }
+
+    if(response.status == 201 || response.status == 200)  
+      revalidatePath('/dashboard');
     
     return {
       success: true,

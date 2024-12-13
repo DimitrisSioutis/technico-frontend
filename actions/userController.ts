@@ -6,12 +6,10 @@ import axios from "axios";
 import { type User } from "@/app/types";
 import { revalidatePath } from "next/cache";
 
-
-
 // Define an interface for the form state
 interface FormState {
   errors?: {
-    id?:string;
+    id?: string;
     vatNumber?: string;
     name?: string;
     surname?: string;
@@ -24,12 +22,9 @@ interface FormState {
   userId?: string;
 }
 
-export const postUser = async (
-  prevState: FormState,
-  formData: FormData
-): Promise<FormState> => {
+export const postUser = async (prevState: FormState,formData: FormData): Promise<FormState> => {
   const errors: FormState["errors"] = {};
-  
+
   if (!formData.get("vatNumber")) errors.vatNumber = "VAT Number is required";
   if (!formData.get("name")) errors.name = "Name is required";
   if (!formData.get("surname")) errors.surname = "Surname is required";
@@ -54,9 +49,11 @@ export const postUser = async (
   if ((!password || password.length < 6) && !userId) {
     errors.password = "Password must be at least 6 characters";
   }
-  
+
   if (Object.keys(errors).length > 0) {
-    return { errors };
+    return {
+      errors
+    };
   }
 
   const userData: User = {
@@ -67,47 +64,53 @@ export const postUser = async (
     phoneNumber: phoneNumber,
     email: email,
     ...(!userId && { password: password }),
-    ...(userId && { id: userId })
+    ...(userId && { id: userId }),
   };
 
   let response;
 
-
-  if (userId) {
-    response = await updateData("User", userId, userData);
-  } else {
-    response = await createData("User", userData);
-  }
-
-  if (response.status === 409) {
-    const errors: FormState["errors"] = {};
-    const errorMessage = response.data.message;
-    console.log(response.data.message);
-
-    switch (errorMessage) {
-      case "User with this Email already exists":
-        errors.email = errorMessage;
-        break;
-      case "User with this Vat already exists":
-        errors.vatNumber = errorMessage;
-        break;
-      case "User with this VAT & Email already exists":
-        errors.vatNumber = "User with this VAT already exists";
-        errors.email = "User with this Email already exists";
-        break;
-      default:
-        console.log("Got the default error");
+  try {
+    if (userId) {
+      response = await updateData("User", userId, userData);
+    } else {
+      response = await createData("User", userData);
     }
 
-    return { errors, response };
+    if (response.status === 409) {
+      const errors: FormState["errors"] = {};
+      const errorMessage = response.data.message;
+      console.log(response.data.message);
+
+      switch (errorMessage) {
+        case "User with this Email already exists":
+          errors.email = errorMessage;
+          break;
+        case "User with this Vat already exists":
+          errors.vatNumber = errorMessage;
+          break;
+        case "User with this VAT & Email already exists":
+          errors.vatNumber = "User with this VAT already exists";
+          errors.email = "User with this Email already exists";
+          break;
+        default:
+          console.log("Got the default error");
+      }
+      return {
+        errors
+      };
+    }
+
+
+
+  } catch (error) {
+    console.error("Error in postUser:", error);
+    return {
+      errors: { general: "An unexpected error occurred" },
+      values: userData,
+    };
   }
 
-  revalidatePath('/dashboard')
-
-  return {
-    success: true,
-    userId: response.data.id,
-  };
+  return {result: true}
 };
 
 export const login = async function (prevState, formData) {

@@ -9,15 +9,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import Alert from "@/components/Alert";
-import { useFormState } from "react-dom";
-import { logout,postUser} from "@/actions/userController";
+// import {useFormState} from "react-dom";
+import { logout, postUser } from "@/actions/userController";
 import UserForm from "./UserForm";
 import { type User } from "@/app/types";
+import { revalidatePath } from "next/cache";
 
-const UserCard = ({ user } : {user: User}) => {
-  const initialState = {
+const UserCard = ({ user }: { user: User }) => {
+  const formState = {
     values: {
       vatNumber: user.vatNumber,
       name: user.name,
@@ -25,15 +25,27 @@ const UserCard = ({ user } : {user: User}) => {
       address: user.address,
       phoneNumber: user.phoneNumber,
       email: user.email,
-      password: user.password
+      password: user.password,
     },
     errors: {},
     success: false,
-  }
+  };
 
-  const [logoutState, logoutAction] = useFormState(logout, {});
-  const [updateState, updateAction] = useFormState(postUser, initialState);
-  
+  const formAction = async (formData: FormData) => {
+    "use server"
+    await postUser(formState, formData);
+    revalidatePath("/dashboard");
+  };
+
+  const logoutAction = async (formData: FormData) => {
+    "use server"
+    await logout();
+    revalidatePath("/dashboard");
+  };
+
+  // const [logoutState, logoutAction] = useFormState(logout, {});
+  // const [updateState, updateAction] = useFormState(postUser, initialState);
+
   return (
     <Card className="shadow-lg">
       <CardHeader className="pb-4">
@@ -51,15 +63,15 @@ const UserCard = ({ user } : {user: User}) => {
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Edit User</DialogTitle>
-                      <DialogDescription>
-                        <UserForm
-                          formAction={updateAction}
-                          formState={updateState}
-                          userId={user.id}
-                        />
-                      </DialogDescription>
+                      <DialogTitle>User Profile</DialogTitle>
+                      <DialogDescription>Edit user details</DialogDescription>
                     </DialogHeader>
+                    <UserForm
+                      formAction={formAction}
+                      formState={formState}
+                      userId={user.id}
+                    /> 
+          
                   </DialogContent>
                 </Dialog>
               </CardTitle>
@@ -74,7 +86,7 @@ const UserCard = ({ user } : {user: User}) => {
             icon={<LogOut />}
             buttonLabel={"Log Out"}
             hiddenInput={<></>}
-          />
+          /> 
         </div>
       </CardHeader>
     </Card>

@@ -15,13 +15,9 @@ export default async function Dashboard() {
   const cookie = getUserCookie();
   const userId = cookie?.userId;
  
-  if(userId){
-    const user = await fetchData(userId, "User")
-    if (!user) return <UserPageSkeleton/>;
-    return (
-        user.role == 1 ? <Admin user={user}/> : <User user={user}/>
-    );
-  }
-  
-  redirect('/login')
+  if(!userId) redirect('/login')
+  const user = await fetchData(userId, "User")
+if(user) console.log('use refetched:' + user.name)
+  if (!user) return <UserPageSkeleton/>;
+  return user.role == 1 ? <Admin user={user}/> : <User user={user}/>;
 }

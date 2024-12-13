@@ -1,124 +1,59 @@
-import React,{useEffect} from "react";
-import { useRouter } from "next/navigation";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardFooter } from "@/components/ui/card";
 import { type User } from "@/app/types";
 
-// Define types for the props
 interface FormState {
-  errors?: Record<string, string>; 
-  values?: Partial<User>; 
+  errors?: Record<string, string>;
+  values?: Partial<User>;
   success?: boolean;
 }
 
-interface SignUpFormProps {
+interface UserFormProps {
   formAction: (formData: FormData) => void;
   formState: FormState;
   userId?: string;
 }
 
-const UserForm: React.FC<SignUpFormProps> = ({ formAction, formState, userId }) => {
-  const router = useRouter();
-
-  useEffect(()=>{
-    console.warn('DATA: ',formState)
-    if(formState.success){
-      
-      router.push('/dashboard')
-    }
-  },[formState])
+const UserForm: React.FC<UserFormProps> = ({ formAction, formState, userId }) => {
+  const formFields: FormField[] = [
+    { name: "vatNumber", label: "VAT Number" },
+    { name: "name", label: "Name" },
+    { name: "surname", label: "Surname" },
+    { name: "address", label: "Address" },
+    { name: "phoneNumber", label: "Phone Number" },
+    { name: "email", label: "Email", type: "email" },
+  ];
 
   return (
     <form action={formAction} className="space-y-4">
-      {userId && (
-        <input 
-          type="hidden" 
-          name="userId" 
-          value={userId} 
-        />
-      )}
+      {formFields.map((field) => (
+        <React.Fragment key={field.name}>
+          <Label htmlFor={field.name}>{field.label}</Label>
+          {formState.errors?.[field.name] && (
+            <span className="pl-4 text-red-500 text-sm">
+              {formState.errors[field.name]}
+            </span>
+          )}
+          <Input
+            id={field.name}
+            name={field.name}
+            type={field.type || "text"}
+            defaultValue={formState.values?.[field.name] || ""}
+            required
+          />
+        </React.Fragment>
+      ))}
 
-      <div>
-        <Label htmlFor="vatNumber">VAT Number</Label>
-        {formState.errors?.vatNumber && (
-          <span className="pl-4 text-red-500 text-sm">{formState.errors.vatNumber}</span>
-        )}
-        <Input 
-          id="vatNumber" 
-          name="vatNumber" 
-          defaultValue={formState.values?.vatNumber || ""} 
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="name">Name</Label>
-        {formState.errors?.name && (
-          <span className="pl-4 text-red-500 text-sm">{formState.errors.name}</span>
-        )}
-        <Input 
-          id="name" 
-          name="name" 
-          defaultValue={formState.values?.name || ""} 
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="surname">Surname</Label>
-        {formState.errors?.surname && (
-          <span className="pl-4 text-red-500 text-sm">{formState.errors.surname}</span>
-        )}
-        <Input 
-          id="surname" 
-          name="surname" 
-          defaultValue={formState.values?.surname || ""} 
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="address">Address</Label>
-        {formState.errors?.address && (
-          <span className="pl-4 text-red-500 text-sm">{formState.errors.address}</span>
-        )}
-        <Input 
-          id="address" 
-          name="address" 
-          defaultValue={formState.values?.address || ""} 
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="phoneNumber">Phone Number</Label>
-        {formState.errors?.phoneNumber && (
-          <span className="pl-4 text-red-500 text-sm">{formState.errors.phoneNumber}</span>
-        )}
-        <Input
-          id="phoneNumber"
-          name="phoneNumber"
-          defaultValue={formState.values?.phoneNumber || ""}
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="email">Email</Label>
-        {formState.errors?.email && (
-          <span className="pl-4 text-red-500 text-sm">{formState.errors.email}</span>
-        )}
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          defaultValue={formState.values?.email || ""}
-          required
-        />
-      </div>
-      
-
-        {userId==undefined && (<div>
+      {userId === undefined && (
+        <>
           <Label htmlFor="password">Password</Label>
           {formState.errors?.password && (
-            <span className="pl-4 text-red-500 text-sm">{formState.errors.password}</span>
+            <span className="pl-4 text-red-500 text-sm">
+              {formState.errors.password}
+            </span>
           )}
           <Input
             id="password"
@@ -127,10 +62,13 @@ const UserForm: React.FC<SignUpFormProps> = ({ formAction, formState, userId }) 
             defaultValue={formState.values?.password || ""}
             required
           />
-        </div>)}
+        </>
+      )}
+
+      {userId && <input type="hidden" name="userId" value={userId} />}
 
       <CardFooter>
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-1/2 m-auto">
           {userId ? "Update Profile" : "Sign Up"}
         </Button>
       </CardFooter>

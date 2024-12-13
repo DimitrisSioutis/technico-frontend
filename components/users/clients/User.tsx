@@ -1,4 +1,3 @@
-"use client";
 import React, { useState} from "react";
 import {type User} from "@/app/types";
 import UserProperties from "@/components/properties/UserProperties";
@@ -12,7 +11,6 @@ import UserCard from "./UserCard";
 
 
 const User = ({ user }: { user: User }) => {
-  const [activeTab, setActiveTab] = useState<string>("repairs");
   const userRepairs = user.properties.flatMap(property => property.repairs);
 
   const TabContentData = [
@@ -46,7 +44,7 @@ const User = ({ user }: { user: User }) => {
     <div className="grid gap-6 w-1/2 m-auto my-4">
       <UserCard user={user}/>
 
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs defaultValue="repairs"  className="w-full">
         <TabsList className="grid w-full grid-cols-4"> 
         {TabContentData.map((tab, index) => (
           <TabsTrigger key={index} value={tab.value}>{tab.title}</TabsTrigger>
