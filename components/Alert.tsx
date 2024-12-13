@@ -14,7 +14,7 @@ import {
 const Alert = ({formAction,icon,buttonLabel ,hiddenInput}) => {
   return (
     <AlertDialog>
-    <AlertDialogTrigger>{icon}</AlertDialogTrigger>
+    <AlertDialogTrigger className='text-muted-foreground'>{icon}</AlertDialogTrigger>
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>Are you sure?</AlertDialogTitle>

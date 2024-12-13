@@ -5,6 +5,9 @@ import { cookies } from "next/headers";
 import axios from "axios";
 import { type User } from "@/app/types";
 import { revalidatePath } from "next/cache";
+import deleteData from "@/utils/delete";
+import { redirect } from "next/navigation";
+import https from "https";
 
 // Define an interface for the form state
 interface FormState {
@@ -18,12 +21,10 @@ interface FormState {
     email?: string;
     password?: string;
   };
-  success?: boolean;
-  userId?: string;
 }
 
-export const postUser = async (prevState: FormState,formData: FormData): Promise<FormState> => {
-  const errors: FormState["errors"] = {};
+export async function postUser(prevState: FormState, formData: FormData): Promise<FormState> {
+  const errors: FormState['errors'] = {};
 
   if (!formData.get("vatNumber")) errors.vatNumber = "VAT Number is required";
   if (!formData.get("name")) errors.name = "Name is required";
@@ -31,9 +32,10 @@ export const postUser = async (prevState: FormState,formData: FormData): Promise
   if (!formData.get("address")) errors.address = "Address is required";
 
   const vatNumber = formData.get("vatNumber") as string;
-  if (vatNumber.length != 9) {
-    errors.vatNumber = "VAT Number must be 10 characters";
+  if (vatNumber.length !== 9) {
+    errors.vatNumber = "VAT Number must be 9 characters";
   }
+  
   const phoneNumber = formData.get("phoneNumber") as string;
   if (!phoneNumber || phoneNumber.length < 10) {
     errors.phoneNumber = "Phone number must be at least 10 digits";
@@ -50,10 +52,9 @@ export const postUser = async (prevState: FormState,formData: FormData): Promise
     errors.password = "Password must be at least 6 characters";
   }
 
+  // If there are validation errors, return them
   if (Object.keys(errors).length > 0) {
-    return {
-      errors
-    };
+    return { errors };
   }
 
   const userData: User = {
@@ -67,68 +68,44 @@ export const postUser = async (prevState: FormState,formData: FormData): Promise
     ...(userId && { id: userId }),
   };
 
-  let response;
-
   try {
     if (userId) {
-      response = await updateData("User", userId, userData);
+      await updateData("User", userId, userData);
     } else {
-      response = await createData("User", userData);
+      await createData("User", userData);
     }
-
-    if (response.status === 409) {
-      const errors: FormState["errors"] = {};
-      const errorMessage = response.data.message;
-      console.log(response.data.message);
-
-      switch (errorMessage) {
-        case "User with this Email already exists":
-          errors.email = errorMessage;
-          break;
-        case "User with this Vat already exists":
-          errors.vatNumber = errorMessage;
-          break;
-        case "User with this VAT & Email already exists":
-          errors.vatNumber = "User with this VAT already exists";
-          errors.email = "User with this Email already exists";
-          break;
-        default:
-          console.log("Got the default error");
-      }
-      return {
-        errors
-      };
-    }
-
-
-
   } catch (error) {
-    console.error("Error in postUser:", error);
+    // Return a general error in the catch block
     return {
-      errors: { general: "An unexpected error occurred" },
-      values: userData,
+      errors: { 
+        general: "An unexpected error occurred. Please try again later." 
+      },
+      values: userData
     };
   }
 
-  return {result: true}
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+
+export const deleteUser = async function (id) {
+
+  try {
+    await deleteData("User",id)
+  }
+  catch(e){
+    return e;
+  }
 };
 
 export const login = async function (prevState, formData) {
-  const failObject = {
-    success: false,
-    message: "Invalid email / password.",
-  };
-
   const ourUser = {
     email: formData.get("email"),
     password: formData.get("password"),
   };
 
   if (!ourUser.email || !ourUser.password) {
-    return {
-      success: false,
-      message: "Email and password are required.",
-    };
+    return "Email and password are required."
   }
 
   try {
@@ -140,41 +117,28 @@ export const login = async function (prevState, formData) {
           "Content-Type": "application/json",
         },
         withCredentials: true,
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false
+        })
       }
     );
-
-    if (response.status == 200) {
-      const token = response.data.token;
-
-      if (!token) {
-        return {
-          success: false,
-          message: "Authentication failed: No token received",
-        };
-      }
+    const token = response.data.token;
 
       cookies().set("token", token, {
         httpOnly: true,
         sameSite: "strict",
         maxAge: 60 * 60 * 24,
         secure: process.env.NODE_ENV === "production",
-      });
-
-      return {
-        success: true,
-      };
-    } else {
-      return failObject;
-    }
-  } catch (error) {
-    console.error("Login error details:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
     });
-    return failObject;
+
+  } catch (error) {
+    return "Wrong username or password";
   }
+
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
 };
+
 
 export const logout = async function () {
   cookies().delete("token");

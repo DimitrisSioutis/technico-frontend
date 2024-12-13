@@ -1,5 +1,5 @@
 import React from "react";
-import { User as UserIcon, Mail, LogOut, Pencil } from "lucide-react";
+import { User as UserIcon, Mail, LogOut, Pencil, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -10,32 +10,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Alert from "@/components/Alert";
-// import {useFormState} from "react-dom";
-import { logout, postUser } from "@/actions/userController";
-import UserForm from "./UserForm";
+import { logout, postUser, deleteUser } from "@/actions/userController";
 import { type User } from "@/app/types";
 import { revalidatePath } from "next/cache";
+import Form from "./Form";
 
-const UserCard = ({ user }: { user: User }) => {
-  const formState = {
-    values: {
-      vatNumber: user.vatNumber,
-      name: user.name,
-      surname: user.surname,
-      address: user.address,
-      phoneNumber: user.phoneNumber,
-      email: user.email,
-      password: user.password,
-    },
-    errors: {},
-    success: false,
-  };
-
-  const formAction = async (formData: FormData) => {
-    "use server"
-    await postUser(formState, formData);
-    revalidatePath("/dashboard");
-  };
+const UserCard = async ({ user }: { user: User }) => {
 
   const logoutAction = async (formData: FormData) => {
     "use server"
@@ -43,8 +23,20 @@ const UserCard = ({ user }: { user: User }) => {
     revalidatePath("/dashboard");
   };
 
-  // const [logoutState, logoutAction] = useFormState(logout, {});
-  // const [updateState, updateAction] = useFormState(postUser, initialState);
+  let error;
+  
+  const deleteAction = async (formData: FormData) => {
+    "use server"
+    try{
+      await deleteUser(user.id);
+    }catch(e){
+      error = e;
+    }
+
+    // revalidatePath("/dashboard");
+  };
+
+
 
   return (
     <Card className="shadow-lg">
@@ -55,7 +47,7 @@ const UserCard = ({ user }: { user: User }) => {
               <UserIcon className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold flex items-center space-x-2">
+              <CardTitle className="text-2xl font-bold flex items-center space-x-2 ml-2">
                 <span>{user.name + " " + user.surname}</span>
                 <Dialog>
                   <DialogTrigger>
@@ -66,14 +58,21 @@ const UserCard = ({ user }: { user: User }) => {
                       <DialogTitle>User Profile</DialogTitle>
                       <DialogDescription>Edit user details</DialogDescription>
                     </DialogHeader>
-                    <UserForm
+                    {/* <UserForm
                       formAction={formAction}
                       formState={formState}
                       userId={user.id}
-                    /> 
-          
+                    />  */}
+                    <Form user={user}/>
                   </DialogContent>
                 </Dialog>
+                <Alert
+                      formAction={deleteAction}
+                      icon={<Trash2/>}
+                      buttonLabel={"Delete User"}
+                      hiddenInput={<></>}
+                />
+                {error && {error}}
               </CardTitle>
               <div className="flex items-center text-muted-foreground mt-1">
                 <Mail className="h-4 w-4 mr-2" />

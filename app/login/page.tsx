@@ -10,12 +10,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function Page() {
-  const [formState, formAction] = useFormState(login, { success: false, message: "" });
+  const [formState, formAction] = useFormState(login, null);
   const router = useRouter(); 
-
-  if (formState.success) {
-    router.push("/dashboard");
-  }
 
   return (
     <div className="h-[88svh] flex items-center justify-center bg-gray-50 p-6">
@@ -32,11 +28,10 @@ export default function Page() {
           <div className="py-2">
             <Input id="password" name="password" type="password" className="py-2" />
           </div>
-
-          {formState.message && (
-            <span className={`text-sm ${formState.success ? "text-green-600" : "text-red-600"}`}>
-              {formState.message}
-            </span>
+          {formState && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <span className="block sm:inline">{formState}</span>
+            </div>
           )}
 
           <CardFooter className="mt-8">
