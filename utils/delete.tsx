@@ -1,18 +1,25 @@
-export default async function deleteData(model: string, id: string){
-    try {
-      const capitalizedModel = model.charAt(0).toLocaleUpperCase() + model.slice(1);
-      const response = await fetch(`https://localhost:7166/api/${capitalizedModel}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Something went wrong while deleting');
-      }
-    } catch (error) {
-      console.log(error);
-    }
-};
+export default async function deleteData(model: string, id: string) {
+  const response = await fetch(`https://localhost:7166/api/${model}/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (response.status === 204) {
+    return { success: true };
+  }
+
+  if (!response.ok) {
+    const errorText = await response.text(); 
+    throw new Error(errorText);
+  }
+
+  const responseBody = await response.text(); 
+  if (responseBody === '') {
+    throw new Error('No content returned from the server');
+  }
+
+  const result = JSON.parse(responseBody); 
+  return result;
+}

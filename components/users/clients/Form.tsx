@@ -30,6 +30,7 @@ const Form: React.FC<UserFormProps> = ({ user }) => {
             </span>
           )}
           <Input
+            className="my-2"
             id={field.name}
             name={field.name}
             type={field.type || "text"}
@@ -39,9 +40,14 @@ const Form: React.FC<UserFormProps> = ({ user }) => {
         </React.Fragment>
       ))}
 
-      {user.id === undefined && (
+      {(user === undefined || user.id === undefined) && (
         <>
           <Label htmlFor="password">Password</Label>
+          {state?.errors && state.errors.password && (
+            <span className="pl-4 text-red-500 text-sm">
+              {state.errors.password}
+            </span>
+          )}
           <Input
             id="password"
             name="password"
@@ -52,11 +58,11 @@ const Form: React.FC<UserFormProps> = ({ user }) => {
         </>
       )}
 
-      {user.id && <input type="hidden" name="userId" value={user.id} />}
+      {user?.id && <input type="hidden" name="userId" value={user.id} />}
 
       <CardFooter>
         <Button type="submit" className="w-1/2 m-auto">
-          {user.id ? "Update Profile" : "Sign Up"}
+          {user && user.id ? "Update Profile" : "Sign Up"}
         </Button> 
       </CardFooter>
       

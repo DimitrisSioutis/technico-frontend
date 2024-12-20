@@ -12,16 +12,10 @@ import {
 import Alert from "@/components/Alert";
 import { logout } from "@/actions/userController";
 import { type User } from "@/app/types";
-import { revalidatePath } from "next/cache";
+import { deleteUser } from "@/actions/userController";
 import Form from "./Form";
 
-const UserCard = async ({ user }: { user: User }) => {
-
-  const logoutAction = async (formData: FormData) => {
-    "use server"
-    await logout();
-    revalidatePath("/dashboard");
-  };
+const UserCard = ({ user }: { user: User }) => {
 
   return (
     <Card className="shadow-lg">
@@ -46,12 +40,12 @@ const UserCard = async ({ user }: { user: User }) => {
                     <Form user={user}/>
                   </DialogContent>
                 </Dialog>
-                {/* <Alert
-                      formAction={deleteAction}
+                <Alert
+                      formAction={deleteUser}
                       icon={<Trash2/>}
                       buttonLabel={"Delete User"}
                       hiddenInput={<></>}
-                /> */}
+                />
                 
               </CardTitle>
               <div className="flex items-center text-muted-foreground mt-1">
@@ -61,7 +55,7 @@ const UserCard = async ({ user }: { user: User }) => {
             </div>
           </div>
           <Alert
-            formAction={logoutAction}
+            formAction={logout}
             icon={<LogOut />}
             buttonLabel={"Log Out"}
             hiddenInput={<></>}

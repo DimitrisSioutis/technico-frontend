@@ -4,7 +4,6 @@ import {  Pencil, Trash2 } from "lucide-react";
 import { SimpleProperty } from "@/app/types";
 import Alert from "../Alert";
 import { deleteProperty } from "@/actions/propertyController";
-import { useFormState } from "react-dom";
 
 interface PropertyViewProps {
   property: SimpleProperty;
@@ -18,7 +17,6 @@ const PropertyView: React.FC<PropertyViewProps> = ({ property, onEdit }) => {
     propertyId: property.propertyId,
   };
 
-  const [formState, formAction] = useFormState(deleteProperty, initialState);
 
   return (
     <>
@@ -45,11 +43,11 @@ const PropertyView: React.FC<PropertyViewProps> = ({ property, onEdit }) => {
             <input
               type="hidden"
               name="propertyId"
-              value={property.propertyId}
+              defaultValue={property.propertyId}
             />
           }
           icon={<Trash2/>}
-          formAction={formAction}
+          formAction={deleteProperty}
           buttonLabel={"Delete"}
         />
       </div>

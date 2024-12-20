@@ -2,6 +2,7 @@
 import createData from "@/utils/create";
 import deleteData from "@/utils/delete";
 import updateData from "@/utils/update"; 
+import { chownSync } from "fs";
 import { revalidatePath } from "next/cache";
 
 enum RepairType {
@@ -89,29 +90,36 @@ export async function postRepair(prevState: FormState, formData: FormData): Prom
   }
 };
 
-export async function deleteRepair(
-  prevState: { 
-    success?: boolean; 
-    message?: string; 
-    id?: string 
-  }, 
-  formData: FormData
-){
-  const id = formData.get('id') as string;
+export async function deleteRepair(prevState: any, formData: FormData) {
+  const id = formData.get("id");
+
   try {
-    await deleteData("Repair", id);
+    if (!id) {
+      return {
+        success: false,
+        error: "No repair ID provided"
+      };
+    }
+
+    console.log("Attempting to delete repair with ID:", id);
+    
+    const response = await deleteData("Repair", id as string);
+
+    if (!response || response.error) {
+      return {
+        success: false,
+        error: response?.error || "An error occurred while deleting the repair",
+      };
+    }
+
     revalidatePath("/dashboard");
-    return { 
-      success: true, 
-      message: "Repair deleted successfully",
-      id 
-    };
-  } catch(error) {
+    
+  } catch (error) {
     console.error("Delete repair error:", error);
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : "An error occurred during repair deletion",
-      id 
+    
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "An unexpected error occurred"
     };
   }
-};
+}

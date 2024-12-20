@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import deleteData from "@/utils/delete";
 import { redirect } from "next/navigation";
 import https from "https";
+import { getUserCookie } from "@/lib/getUserCookie";
 
 // Define an interface for the form state
 interface FormState {
@@ -54,6 +55,7 @@ export async function postUser(prevState: FormState, formData: FormData): Promis
 
   // If there are validation errors, return them
   if (Object.keys(errors).length > 0) {
+    console.log(errors)
     return { errors };
   }
 
@@ -68,14 +70,50 @@ export async function postUser(prevState: FormState, formData: FormData): Promis
     ...(userId && { id: userId }),
   };
 
+  let response;
   try {
     if (userId) {
       await updateData("User", userId, userData);
     } else {
-      await createData("User", userData);
+      response = await createData("User", userData);
+  
+      if (response.status === 409) {
+        if (response.data.message === 'User with this Email already exists') {
+          throw new Error('EMAIL_EXISTS');
+        }
+  
+        if (response.data.message === 'User with this VAT already exists') {
+          throw new Error('VAT_EXISTS');
+        }
+      }
     }
   } catch (error) {
-    // Return a general error in the catch block
+    if (error instanceof Error) {
+      switch (error.message) {
+        case 'EMAIL_EXISTS':
+          return {
+            errors: { 
+              email: "User with this Email already exists"
+            },
+            values: userData
+          };
+        case 'VAT_EXISTS':
+          return {
+            errors: { 
+              vatNumber: "User with this VAT already exists"
+            },
+            values: userData
+          };
+        default:
+          return {
+            errors: { 
+              general: "An unexpected error occurred. Please try again later." 
+            },
+            values: userData
+          };
+      }
+    }
+  
     return {
       errors: { 
         general: "An unexpected error occurred. Please try again later." 
@@ -83,20 +121,31 @@ export async function postUser(prevState: FormState, formData: FormData): Promis
       values: userData
     };
   }
-
   revalidatePath('/dashboard')
   redirect('/dashboard')
 }
 
-export const deleteUser = async function (id) {
+export async function deleteUser() {
+  const cookie = getUserCookie();
+  const userId = cookie?.userId;
 
   try {
-    await deleteData("User",id)
+    const result = await deleteData("User", userId);
+
+    if (result.error) {
+      return { error: result.error };
+    }
+
+    // If no error, proceed with cookie deletion and path revalidation
+    cookies().delete("token");
+    revalidatePath('/login');
+    redirect('/login');
+
+  } catch (e: any) {
+    return { error: e.message }; 
   }
-  catch(e){
-    return e;
-  }
-};
+}
+
 
 export const login = async function (prevState, formData) {
   const ourUser = {
@@ -140,6 +189,7 @@ export const login = async function (prevState, formData) {
 };
 
 
-export const logout = async function () {
+export async function logout() {
   cookies().delete("token");
+  revalidatePath('/login');
 };
