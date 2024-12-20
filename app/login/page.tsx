@@ -1,81 +1,17 @@
-"use client";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useRouter } from "next/navigation"; // For navigation
+"use client"
+
+import { useFormState } from "react-dom"
+import { login } from "@/actions/userController"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import Link from "next/link"; // Import Link for navigation
+import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import useRouter
 
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-}
-
-export default function Login() {
-  const [loginData, setLoginData] = useState<LoginData>({
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const router = useRouter(); // Use Next.js router for navigation
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData({ ...loginData, [name]: value });
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!loginData.email) newErrors.email = "Email is required";
-    if (!loginData.password || loginData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  async function postLogin() {
-    try {
-      const response = await fetch("https://localhost:7166/api/User/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Something went wrong while logging in");
-      }
-
-      // Assuming the response returns user data or a success message
-      const user = await response.json(); 
-
-      // Redirect to /user/:user.id (or a different route after successful login)
-      router.push(`/user/${user.id}`);
-    } catch (error) {
-      setErrorMessage((error as Error).message);
-    }
-  }
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      postLogin();
-    }
-  };
+export default function Page() {
+  const [formState, formAction] = useFormState(login, null);
+  const router = useRouter(); 
 
   return (
     <div className="h-[88svh] flex items-center justify-center bg-gray-50 p-6">
@@ -84,41 +20,25 @@ export default function Login() {
           <CardTitle>Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              {errors.email && <span className="pl-4 text-red-500 text-sm">{errors.email}</span>}
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={loginData.email}
-                onChange={handleChange}
-              />
+        <form action={formAction}>
+          <div className="py-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" name="email" type="email" className="py-2" />
+          </div>
+          <div className="py-2">
+            <Input id="password" name="password" type="password" className="py-2" />
+          </div>
+          {formState && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <span className="block sm:inline">{formState}</span>
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              {errors.password && <span className="pl-4 text-red-500 text-sm">{errors.password}</span>}
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={loginData.password}
-                onChange={handleChange}
-              />
-            </div>
+          )}
 
-            {errorMessage && (
-              <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
-            )}
+          <CardFooter className="mt-8">
+            <Button type="submit" className="w-full">Login</Button>
+          </CardFooter>
+        </form>
 
-            <CardFooter>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-            </CardFooter>
-          </form>
-          
           <div className="mt-4 text-center">
             <p>
               Don&apos;t have an account?
