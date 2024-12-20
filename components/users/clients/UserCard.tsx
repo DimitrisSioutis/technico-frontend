@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Alert from "@/components/Alert";
-import { logout, postUser, deleteUser } from "@/actions/userController";
+import { logout } from "@/actions/userController";
 import { type User } from "@/app/types";
 import { revalidatePath } from "next/cache";
 import Form from "./Form";
@@ -22,21 +22,6 @@ const UserCard = async ({ user }: { user: User }) => {
     await logout();
     revalidatePath("/dashboard");
   };
-
-  let error;
-  
-  const deleteAction = async (formData: FormData) => {
-    "use server"
-    try{
-      await deleteUser(user.id);
-    }catch(e){
-      error = e;
-    }
-
-    // revalidatePath("/dashboard");
-  };
-
-
 
   return (
     <Card className="shadow-lg">
@@ -58,21 +43,16 @@ const UserCard = async ({ user }: { user: User }) => {
                       <DialogTitle>User Profile</DialogTitle>
                       <DialogDescription>Edit user details</DialogDescription>
                     </DialogHeader>
-                    {/* <UserForm
-                      formAction={formAction}
-                      formState={formState}
-                      userId={user.id}
-                    />  */}
                     <Form user={user}/>
                   </DialogContent>
                 </Dialog>
-                <Alert
+                {/* <Alert
                       formAction={deleteAction}
                       icon={<Trash2/>}
                       buttonLabel={"Delete User"}
                       hiddenInput={<></>}
-                />
-                {error && {error}}
+                /> */}
+                
               </CardTitle>
               <div className="flex items-center text-muted-foreground mt-1">
                 <Mail className="h-4 w-4 mr-2" />
